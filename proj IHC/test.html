@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ConnectUs - Acessibilidade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    :root{
+      /* escala do texto — controlada por JS */
+      --text-scale: 1;
+      --bg:#000;
+      --fg:#fff;
+      --card:#111;
+      --muted:#9b9b9b;
+      --accent:#4aa3ff;
+      --btn:#333;
+    }
+
+    /* base: usamos rem + var(--text-scale) para permitir zoom apenas do texto */
+    html { font-size: 100%; } /* 16px por padrão */
+    body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: Arial, sans-serif;
+        padding: 0;
+        margin: 0;
+        transition: background 0.3s, color 0.3s;
+        /* não usamos transform para zoom mais */
+        --scale: 1;
+    }
+
+    /* TEXT SIZING (usando rem * var(--text-scale)) */
+    /* 1rem corresponde ao font-size base (100% do navegador). Multiplica-se por --text-scale */
+    :root { --s-small: calc(0.875rem * var(--text-scale)); }   /* ~14px */
+    :root { --s-base:  calc(1rem   * var(--text-scale)); }     /* ~16px */
+    :root { --s-med:   calc(1.375rem * var(--text-scale)); }   /* ~22px */
+    :root { --s-lg:    calc(1.875rem * var(--text-scale)); }   /* ~30px */
+    :root { --s-xl:    calc(2.5rem * var(--text-scale)); }     /* ~40px */
+
+    /* TEMA CLARO */
+    .temaClaro { background:#f2f2f2; color:#111; }
+    .temaClaro header { background:#ccc; color:#000; border-bottom:2px solid #aaa; }
+    .temaClaro .texto { background:#e6e6e6; color:#000; border:1px solid #bbb; }
+    .temaClaro .texto:hover { background:#dcdcdc; }
+    .temaClaro .btn { background:#ccc; color:#000; border:1px solid #aaa; }
+    .temaClaro .btn:hover { background:#bfbfbf; }
+    .temaClaro #resultadoFinal { background:#e8e8e8; border:2px solid #bbb; color:#000; }
+
+    /* Acessibilidade dropdown */
+    .top-acessibilidade {
+        position: fixed;
+        top:10px; right:10px;
+        z-index:999;
+        margin-top:70px;
+        width: 50px;
+        font-size: 20px;
+    }
+    .top-acessibilidade select {
+        padding:10px;
+        border-radius:8px;
+        background:#444;
+        color:#fff;
+        border:none;
+        font-size: var(--s-med);
+        width:120px;
+        cursor:pointer;
+    }
+
+    header {
+        background:#111;
+        padding:18px;
+        text-align:center;
+        border-bottom:2px solid #444;
+    }
+    header h1 { margin:0; font-size: var(--s-lg); }
+
+    .container { padding:30px; font-size: var(--s-med); text-align:center; }
+    .container p{ padding: 20px; font-size: var(--s-base); }
+
+    .texto {
+        background:#222;
+        margin:20px auto;
+        padding:16px;
+        width:90%;
+        border-radius:10px;
+        cursor:pointer;
+        font-size: var(--s-base);
+    }
+    .texto:hover { background:#333; }
+
+    .btn {
+        width:90%;
+        padding:14px;
+        font-size: var(--s-base);
+        margin:14px auto;
+        display:block;
+        border-radius:12px;
+        border:none;
+        background:#444;
+        color:white;
+        cursor:pointer;
+    }
+    .btn:hover { background:#555; }
+
+   /* ---- FORMULÁRIO MODERNO ---- */
+.formulario {
+    margin-top: 24px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(4px);
+    font-size: var(--s-base);
+}
+
+.formulario label {
+    display: block;
+    font-size: var(--s-base);
+    font-weight: 700;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    color: var(--fg);
+}
+
+.formulario input {
+    width: 98%;
+    padding: 12px;
+    font-size: var(--s-base);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    background: #0f0f0f;
+    color: #fff;
+    outline: none;
+    transition: 0.18s;
+}
+
+/* placeholder mais visível */
+.formulario input::placeholder { color: #9a9a9a; }
+
+/* foco */
+.formulario input:focus {
+    border-color: var(--accent);
+    background: #161616;
+    box-shadow: 0 0 8px rgba(74,163,255,0.18);
+}
+
+/* botão pronto */
+.formulario .btn {
+    margin-top: 18px;
+    width: 100%;
+    background: var(--accent);
+    padding: 12px;
+    font-size: var(--s-med);
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    transition: 0.18s;
+}
+
+.formulario .btn:hover {
+    background: #6bbaff;
+    transform: translateY(-2px);
+}
+
+/* ---- TEMA CLARO ---- */
+.temaClaro .formulario { background: #f0f0f0; border: 1px solid #ddd; }
+.temaClaro .formulario input { background: #fff; color: #000; border-color: #ccc; }
+.temaClaro .formulario input:focus { border-color: #4aa3ff; background: #fff; }
+.temaClaro .formulario label { color: #000; }
+.temaClaro .formulario .btn { background: #4aa3ff; color: #000; }
+
+    #resultadoFinal {
+        display:none;
+        background:#111;
+        padding:20px;
+        margin:20px auto;
+        width:90%;
+        border-radius:12px;
+        font-size: var(--s-base);
+        border:2px solid rgba(255,255,255,0.06);
+        line-height:1.6;
+    }
+
+    #escutando {
+        display:none;
+        text-align:center;
+        margin-top:12px;
+        font-size: var(--s-base);
+        color:#0f0;
+        font-weight:700;
+    }
+    /*senha css*/
+    .senha-wrapper {
+      position: relative;
+      width: 98%;
+    }
+
+    .toggleSenhaBtn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: var(--s-base);
+      color: #fff;
+    }
+
+    .temaClaro .toggleSenhaBtn { color: #000; }
+
+    .senha-wrapper input { padding-right: 48px; }
+
+    /* responsive */
+    @media (max-width:720px){
+      header h1 { font-size: calc(1.5rem * var(--text-scale)); }
+      .container { padding:16px; }
+      .formulario { padding:14px; }
+    }
+
+</style>
+</head>
+<body>
+
+<!-- Dropdown Acessibilidade -->
+<div class="top-acessibilidade">
+    <select id="menuAcessibilidade" onchange="executarOpcao(this.value)" aria-label="Opções de acessibilidade">
+        <option value="">⚙</option>
+        <option value="zoomIn">Aumentar Zoom</option>
+        <option value="zoomOut">Diminuir Zoom</option>
+        <option value="modoCalmo">Modo Calmo</option>
+        <option value="pauseAudio">Pausar Leitura</option>
+        <option value="resumeAudio">Retomar Leitura</option>
+        <option value="toggleTheme">Tema Claro/Escuro</option>
+        <option value="desativarVoz">Desativar Voz</option>
+    </select>
+</div>
+
+<header>
+    <h1 onmouseover="lerTexto(this)">ConnectUs</h1>
+</header>
+
+<div class="container">
+    <p class="texto" onmouseover="lerTexto(this)">
+        Passe o mouse sobre qualquer texto para ouvir sua leitura. Ou clique em iniciar para responder por voz.
+    </p>
+
+    <p class="texto" onmouseover="lerTexto(this)">
+        Bem-vindo ao ConnectUs! Este sistema foi criado para facilitar o acesso à cultura e ao entretenimento para todos.
+    </p>
+
+    <p class="texto" onmouseover="lerTexto(this)">
+    Aqui você encontrará recursos de acessibilidade como leitura de textos, navegação por voz, modo de alto contraste, 
+    ajustes de zoom, suporte a Libras e muito mais. Tudo foi pensado para facilitar sua experiência e permitir 
+    que você explore filmes, músicas, jogos e conteúdos educativos do seu jeito.
+    </p>
+
+    <p class="texto" onmouseover="lerTexto(this)">
+    Para começar, você pode criar o seu perfil completando o cadastro — por voz ou digitando — ou, se já possui uma conta, 
+    basta acessar o login para continuar de onde parou. Escolha a melhor opção abaixo.
+    </p>
+
+    <button class="btn" onclick="iniciarFluxo()">
+        🎤 Iniciar cadastro por Voz
+    </button>
+
+    <!-- BOTÃO DE LOGIN -->
+    <button class="btn"  onmouseover="lerTexto(this)" onclick="window.location.href='login.html'">
+        Já tem um cadastro ? ➜ faça o seu Login aqui! 
+    </button>
+
+    <div id="escutando" role="status" aria-live="polite">🎧 Ouvindo você…</div>
+</div>
+
+<div class="formulario" onmouseover="lerTexto(this)" >
+    
+    <label for="nomeUsuario">Nome:</label>
+    <input type="text" id="nomeUsuario" placeholder="Seu nome completo">
+   
+
+    <label for="idadeUsuario">Idade:</label>
+    <input type="text" id="idadeUsuario" placeholder="Sua idade">
+
+    <label for="deficienciaUsuario">Possui alguma deficiência?:</label>
+    <input type="text" id="deficienciaUsuario" placeholder="Ex: visual, auditiva, nenhuma">
+
+    <label for="preferenciaNavegacao">Preferência de navegação:</label>
+    <input type="text" id="preferenciaNavegacao" placeholder="Ex: voz, toque">
+
+    <label for="interesseUsuario">Interesses:</label>
+    <input type="text" id="interesseUsuario" placeholder="Ex: filmes, música, teatro">
+
+    <!-- NOVO CAMPO SENHA -->
+    <label for="senhaUsuario">Senha:</label>
+    <div class="senha-wrapper">
+        <input type="password" id="senhaUsuario" placeholder="Crie sua senha">
+        <button type="button" class="toggleSenhaBtn" onclick="toggleSenha()" aria-label="Mostrar ou ocultar senha">👁️</button>
+    </div>
+
+    <button class="btn" onclick="confirmarManual()"  onmouseover="lerTexto(this)">
+        ✔ Pronto
+    </button>
+</div>
+
+<div id="resultadoFinal">
+    <h2 style="text-align:center;">✨ Perfil Coletado</h2>
+    <p><strong>Nome:</strong> <span id="rNome"></span></p>
+    <p><strong>Idade:</strong> <span id="rIdade"></span></p>
+    <p><strong>Deficiência:</strong> <span id="rDef"></span></p>
+    <p><strong>Preferência de navegação:</strong> <span id="rNav"></span></p>
+    <p><strong>Interesses:</strong> <span id="rInteresse"></span></p>
+    <p><strong>Senha:</strong> <span id="rSenha"></span></p>
+
+    <button class="btn" onclick="irParaConteudos()">
+        ✔ Continuar para conteúdos
+    </button>
+</div>
+
+<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<script>
+/* ===========================
+   Sistema de voz — On / Off
+   =========================== */
+
+let vozAtiva = true;
+window._recognizerGlobal = null;
+const BEEP = document.getElementById('beep') || null;
+
+/* ---------- Utilitários TTS ---------- */
+function lerTexto(el){
+  if (!vozAtiva) return;
+  const txt = (typeof el === "string") ? el : (el && (el.innerText || el.textContent) || "");
+  if (!txt) return;
+  try { speechSynthesis.cancel(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = "pt-BR";
+  speechSynthesis.speak(u);
+}
+
+function falar(texto, fim = null){
+  if (!vozAtiva) {
+    if (typeof fim === 'function') fim();
+    return;
+  }
+  try { speechSynthesis.cancel(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = "pt-BR";
+  if (typeof fim === 'function') u.onend = fim;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Fluxo por voz (perguntas) ---------- */
+const perguntas = [
+  { campo:"nomeUsuario", texto:"Qual é o seu nome?" },
+  { campo:"idadeUsuario", texto:"Qual é a sua idade?" },
+  { campo:"deficienciaUsuario", texto:"Você possui alguma deficiência visual, auditiva ou motora?" },
+  { campo:"preferenciaNavegacao", texto:"Você prefere navegação por voz ou por toque?" },
+  { campo:"interesseUsuario", texto:"Quais conteúdos você mais gostaria de acessar? Filmes, música, teatro ou jogos?" },
+  { campo:"senhaUsuario", texto:"Por favor, diga qual será sua senha. Diga algo simples, como números ou uma palavra." }
+];
+
+let index = 0;
+
+function iniciarFluxo(){
+  if (!vozAtiva) {
+    alert('Voz desativada — ative pelo menu de acessibilidade para usar o cadastro por voz.');
+    return;
+  }
+  index = 0;
+  falar("Vamos começar o cadastro por voz.", ()=> perguntar());
+}
+
+function perguntar(){
+  if (!vozAtiva) return;
+  if(index >= perguntas.length){
+    exibirDados(true);
+    return;
+  }
+  const p = perguntas[index];
+  falar(p.texto, ()=>{
+    // damos um pequeno intervalo entre a fala e o sinal para o usuário não se confundir
+    setTimeout(()=> {
+      falar("Ao sinal, fale agora.", ()=> {
+        try { if (BEEP) { BEEP.currentTime = 0; BEEP.play(); } } catch(e){}
+        iniciarEscuta();
+      });
+    }, 250);
+  });
+}
+
+/* ---------- Reconhecimento ---------- */
+function iniciarEscuta(){
+  if (!vozAtiva) return;
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  if (!Rec) { falar('Seu navegador não suporta reconhecimento de voz.'); return; }
+
+  try {
+    const rec = new Rec();
+    rec.lang = 'pt-BR';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    window._recognizerGlobal = rec;
+    let ouviu = false;
+    const elEsc = document.getElementById('escutando');
+    if (elEsc) elEsc.style.display = 'block';
+
+    rec.onresult = function(evt){
+      ouviu = true;
+      const texto = (evt.results && evt.results[0] && evt.results[0][0] && evt.results[0][0].transcript) ?
+                     evt.results[0][0].transcript : '';
+      const campo = perguntas[index] && perguntas[index].campo;
+      if (campo && document.getElementById(campo)) {
+        document.getElementById(campo).value = texto;
+      }
+      if (elEsc) elEsc.style.display = 'none';
+      index++;
+      setTimeout(()=> perguntar(), 350);
+    };
+
+    rec.onerror = function(err){
+      if (elEsc) elEsc.style.display = 'none';
+      falar('Não entendi. Vou repetir a pergunta.', ()=> setTimeout(()=> perguntar(), 500));
+    };
+
+    rec.onend = function(){
+      if (!ouviu) {
+        if (elEsc) elEsc.style.display = 'none';
+        falar('Nenhuma fala detectada. Por favor, tente responder novamente.', ()=> setTimeout(()=> perguntar(), 600));
+      }
+      try { if (window._recognizerGlobal === rec) window._recognizerGlobal = null; } catch(e){}
+    };
+
+    rec.start();
+
+    // safety stop
+    setTimeout(()=> { try{ if (window._recognizerGlobal === rec) rec.stop(); }catch(e){} }, 9000);
+
+  } catch (err) {
+    console.error('init rec failed', err);
+    falar('Erro no reconhecimento.');
+  }
+}
+
+/* ---------- Exibir & salvar ---------- */
+function exibirDados(fromVoice){
+  // atualiza campos do resumo
+  document.getElementById("rNome").innerText = document.getElementById('nomeUsuario').value || '';
+  document.getElementById("rIdade").innerText = document.getElementById('idadeUsuario').value || '';
+  document.getElementById("rDef").innerText = document.getElementById('deficienciaUsuario').value || '';
+  document.getElementById("rNav").innerText = document.getElementById('preferenciaNavegacao').value || '';
+  document.getElementById("rInteresse").innerText = document.getElementById('interesseUsuario').value || '';
+  document.getElementById("rSenha").innerText = document.getElementById('senhaUsuario').value ? '••••••' : '(vazia)';
+
+  // tenta salvar; só mostra o resumo se o salvamento for bem-sucedido
+  const ok = salvarPerfil();
+  if (!ok) {
+    // salvarPerfil já fala a razão; mostramos também visualmente
+    alert('Não foi possível salvar o cadastro. Verifique se já existe um usuário com esse nome.');
+    return;
+  }
+
+  // mostra resumo e fala confirmação
+  document.getElementById('resultadoFinal').style.display = 'block';
+  if (fromVoice) {
+    falar('Cadastro concluído. Revise os dados abaixo e clique em continuar.');
+  } else {
+    falar('Cadastro salvo com sucesso. Revise seus dados e clique em continuar.');
+  }
+}
+
+/* ======= função chamada no botão "Pronto" (manual) ======= */
+function confirmarManual(){
+  // validação básica
+  if(!document.getElementById('nomeUsuario').value ||
+     !document.getElementById('idadeUsuario').value ||
+     !document.getElementById('deficienciaUsuario').value ||
+     !document.getElementById('preferenciaNavegacao').value ||
+     !document.getElementById('interesseUsuario').value ||
+     !document.getElementById('senhaUsuario').value) {
+    falar('Por favor, preencha todos os campos antes de continuar.');
+    alert('Por favor, preencha todos os campos.');
+    return;
+  }
+
+  // chama exibirDados (que por sua vez chama salvarPerfil e só mostra o resumo se salvar Perfil ok)
+  exibirDados(false);
+}
+
+/* =====================================================
+      🔵 SISTEMA DE SALVAMENTO — MULTI USUÁRIOS (RETORNA boolean)
+   ===================================================== */
+function salvarPerfil(){
+  const novoPerfil = {
+    nome: (document.getElementById('nomeUsuario').value || '').trim(),
+    idade: (document.getElementById('idadeUsuario').value || '').trim(),
+    deficiencia: (document.getElementById('deficienciaUsuario').value || '').trim(),
+    navegacao: (document.getElementById('preferenciaNavegacao').value || '').trim(),
+    interesse: (document.getElementById('interesseUsuario').value || '').trim(),
+    senha: (document.getElementById('senhaUsuario').value || '')
+  };
+
+  // validação adicional rápida
+  if (!novoPerfil.nome) {
+    falar('Nome inválido.');
+    return false;
+  }
+
+  // carregar lista existente
+  let lista = [];
+  try { lista = JSON.parse(localStorage.getItem('usuariosConnectUs') || "[]"); } catch(e){ lista = []; }
+
+  // verificar duplicado pelo nome (case-insensitive)
+  const existe = lista.find(u => (u.nome || '').toLowerCase() === novoPerfil.nome.toLowerCase());
+
+  if (existe) {
+    falar("Já existe um usuário com esse nome. Tente outro nome.");
+    return false;
+  }
+
+  // adicionar e salvar
+  lista.push(novoPerfil);
+  try {
+    localStorage.setItem('usuariosConnectUs', JSON.stringify(lista));
+    // salvar também perfilConnectUs para compatibilidade com login existente
+    localStorage.setItem('perfilConnectUs', JSON.stringify(novoPerfil));
+  } catch (e) {
+    console.warn('Erro salvando localStorage:', e);
+    falar('Erro ao salvar os dados localmente.');
+    return false;
+  }
+
+  // sucesso
+  falar("Cadastro salvo com sucesso.");
+  return true;
+}
+
+/* ---------- Navegar ---------- */
+function irParaConteudos(){
+  falar('Redirecionando para a tela de conteúdos.');
+  setTimeout(()=> window.location.href = 'menuConteudos.html', 600);
+}
+
+/* =============================
+   Acessibilidade / Dropdown
+   ============================= */
+
+let textScale = 1;
+
+function zoomIn(){
+  textScale = +(textScale + 0.1).toFixed(2);
+  if (textScale > 2.0) textScale = 2.0;
+  document.documentElement.style.setProperty('--text-scale', textScale);
+  if (vozAtiva) falar("Tamanho do texto aumentado.");
+}
+
+function zoomOut(){
+  textScale = +(textScale - 0.1).toFixed(2);
+  if (textScale < 0.6) textScale = 0.6;
+  document.documentElement.style.setProperty('--text-scale', textScale);
+  if (vozAtiva) falar("Tamanho do texto reduzido.");
+}
+
+function toggleTheme(){ document.body.classList.toggle('temaClaro'); }
+function modoCalmo(){ document.body.classList.toggle('modo-calmo'); }
+function pauseAudio(){ try { speechSynthesis.pause(); } catch(e){} }
+function resumeAudio(){ try { speechSynthesis.resume(); } catch(e){} }
+
+function executarOpcao(v){
+  if (!v) return;
+  const map = {
+    zoomIn, zoomOut, toggleTheme, modoCalmo, pauseAudio, resumeAudio, desativarVoz, ativarVoz
+  };
+  if (typeof map[v] === 'function') map[v]();
+  document.getElementById('menuAcessibilidade').value = '';
+}
+
+function desativarVoz(){
+  vozAtiva = false;
+  try { speechSynthesis.cancel(); } catch(e){}
+  if (window._recognizerGlobal){
+    try { window._recognizerGlobal.abort(); } catch(e){}
+    try { window._recognizerGlobal.stop(); } catch(e){}
+    window._recognizerGlobal = null;
+  }
+  toggleDropdownOption('ativarVoz', '🔈 Ativar Voz');
+  alert('Voz desativada — para reativar escolha "Ativar Voz" no menu.');
+}
+
+function ativarVoz(){
+  vozAtiva = true;
+  falar('Voz reativada.');
+  removeDropdownOption('ativarVoz');
+  toggleDropdownOption('desativarVoz', '🔇 Desativar Voz');
+}
+
+function toggleDropdownOption(value, labelText){
+  const sel = document.getElementById('menuAcessibilidade');
+  if (!sel) return;
+  let opt = sel.querySelector(`option[value="${value}"]`);
+  if (!opt){
+    opt = document.createElement('option');
+    opt.value = value;
+    opt.innerText = labelText;
+    sel.appendChild(opt);
+  } else {
+    opt.innerText = labelText;
+  }
+}
+
+function removeDropdownOption(value){
+  const sel = document.getElementById('menuAcessibilidade');
+  if (!sel) return;
+  const opt = sel.querySelector(`option[value="${value}"]`);
+  if (opt) sel.removeChild(opt);
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  toggleDropdownOption('desativarVoz', '🔇 Desativar Voz');
+  document.documentElement.style.setProperty('--text-scale', textScale);
+});
+</script>
+
+
+</body>
+</html>

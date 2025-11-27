@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ConnectUs - Cadastro Acessível</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    :root{
+      --text-scale: 1;
+      --bg:#000;
+      --fg:#fff;
+      --card:#111;
+      --muted:#9b9b9b;
+      --accent:#4aa3ff;
+      --btn:#333;
+    }
+
+    html { font-size: 100%; }
+    body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: Arial, sans-serif;
+        margin: 0;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    /* text scale */
+    :root { --s-base: calc(1rem * var(--text-scale)); }
+    :root { --s-med: calc(1.3rem * var(--text-scale)); }
+    :root { --s-lg: calc(2rem * var(--text-scale)); }
+
+    /* TEMA CLARO */
+    .temaClaro { background:#f2f2f2; color:#111; }
+    .temaClaro header { background:#ccc; color:#000; border-bottom:2px solid #aaa; }
+    .temaClaro .texto { background:#e6e6e6; color:#000; border:1px solid #bbb; }
+    .temaClaro .texto:hover { background:#dcdcdc; }
+
+    .top-acessibilidade {
+        position: fixed;
+        top:10px; right:10px;
+        z-index:999;
+        width:110px;
+    }
+    .top-acessibilidade select {
+        width:100%;
+        font-size: var(--s-med);
+        padding:10px;
+        background:#444;
+        color:white;
+        border-radius:8px;
+        border:none;
+    }
+
+    header {
+        background:#111;
+        padding:20px;
+        text-align:center;
+        border-bottom:2px solid #444;
+    }
+    header h1 { margin:0; font-size: var(--s-lg); }
+
+    .container { padding:25px; text-align:center; }
+
+    .texto {
+        background:#222;
+        padding:16px;
+        margin:16px auto;
+        border-radius:10px;
+        width:90%;
+        font-size: var(--s-base);
+        cursor:pointer;
+    }
+
+    .btn {
+        width:90%;
+        padding:16px;
+        margin:14px auto;
+        background:#444;
+        color:white;
+        font-size: var(--s-base);
+        border:none;
+        border-radius:12px;
+        cursor:pointer;
+    }
+    .btn:hover { background:#555; }
+
+   /* FORMULÁRIO */
+.formulario {
+    margin-top:20px;
+    padding:20px;
+    width:90%;
+    margin:auto;
+    background: rgba(255,255,255,0.05);
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+}
+
+.formulario label {
+    display:block;
+    margin-top:12px;
+    font-size:var(--s-base);
+    font-weight:600;
+}
+
+.formulario input {
+    width:97%;
+    padding:12px;
+    border-radius:8px;
+    border:2px solid rgba(255,255,255,0.15);
+    background:#0f0f0f;
+    color:white;
+    font-size:var(--s-base);
+    transition:0.2s;
+}
+
+.formulario input:focus {
+    border-color:var(--accent);
+    background:#181818;
+}
+
+.senha-wrapper { position:relative; width:97%; }
+.senha-wrapper input { padding-right:48px; }
+
+.toggleSenhaBtn {
+    position:absolute;
+    right:10px; top:50%;
+    transform:translateY(-50%);
+    background:none;
+    border:none;
+    color:white;
+    cursor:pointer;
+    font-size: var(--s-base);
+}
+
+#resultadoFinal {
+    display:none;
+    background:#111;
+    width:90%;
+    padding:20px;
+    margin:20px auto;
+    border-radius:12px;
+    border:2px solid #333;
+    font-size:var(--s-base);
+}
+
+#escutando {
+    display:none;
+    font-size:var(--s-base);
+    color:#0f0;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Acessibilidade -->
+<div class="top-acessibilidade">
+    <select id="menuAcessibilidade" onchange="executarOpcao(this.value)">
+        <option value="">⚙</option>
+        <option value="zoomIn">Aumentar Zoom</option>
+        <option value="zoomOut">Diminuir Zoom</option>
+        <option value="toggleTheme">Tema Claro/Escuro</option>
+        <option value="pauseAudio">Pausar Voz</option>
+        <option value="resumeAudio">Retomar Voz</option>
+        <option value="desativarVoz">Desativar Voz</option>
+        <option value="ativarVoz">Ativar Voz</option>
+    </select>
+</div>
+
+<header>
+    <h1 onmouseover="lerTexto(this)">ConnectUs</h1>
+</header>
+
+<div class="container">
+
+    <p class="texto" onmouseover="lerTexto(this)">
+        O ConnectUs permite criar seu perfil com acessibilidade total.
+    </p>
+
+    <p class="texto" onmouseover="lerTexto(this)">
+        Você pode preencher seu cadastro por voz ou manualmente.
+    </p>
+
+    <button class="btn" onclick="iniciarFluxo()">🎤 Iniciar cadastro por Voz</button>
+
+    <button class="btn" onclick="window.location.href='login.html'">
+        Já tem conta? Faça login aqui
+    </button>
+
+    <div id="escutando">🎧 Ouvindo você…</div>
+</div>
+
+<!-- FORMULÁRIO -->
+<div class="formulario">
+
+    <label>Nome:</label>
+    <input type="text" id="nomeUsuario">
+
+    <label>Idade:</label>
+    <input type="text" id="idadeUsuario">
+
+    <label>Possui alguma deficiência?:</label>
+    <input type="text" id="deficienciaUsuario">
+
+    <label>Preferência de navegação:</label>
+    <input type="text" id="preferenciaNavegacao">
+
+    <label>Interesses:</label>
+    <input type="text" id="interesseUsuario">
+
+    <label>Senha:</label>
+    <div class="senha-wrapper">
+        <input type="password" id="senhaUsuario">
+        <button class="toggleSenhaBtn" onclick="toggleSenha()">👁️</button>
+    </div>
+
+    <button class="btn" onclick="confirmarManual()">✔ Pronto</button>
+</div>
+
+<!-- RESUMO -->
+<div id="resultadoFinal">
+    <h2 style="text-align:center">✨ Cadastro concluído!</h2>
+    <p><strong>Nome:</strong> <span id="rNome"></span></p>
+    <p><strong>Idade:</strong> <span id="rIdade"></span></p>
+    <p><strong>Deficiência:</strong> <span id="rDef"></span></p>
+    <p><strong>Navegação:</strong> <span id="rNav"></span></p>
+    <p><strong>Interesses:</strong> <span id="rInteresse"></span></p>
+
+    <button class="btn" onclick="irLogin()">➡ Ir para Login</button>
+</div>
+
+<audio id="beep"
+src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+/* =====================================================
+                      VOZ
+===================================================== */
+let vozAtiva = true;
+
+function lerTexto(e){
+    if(!vozAtiva) return;
+    let t = (typeof e === "string") ? e : e.innerText;
+    speechSynthesis.cancel();
+    let u = new SpeechSynthesisUtterance(t);
+    u.lang="pt-BR";
+    speechSynthesis.speak(u);
+}
+
+function falar(t, fim=null){
+    if(!vozAtiva){ if(fim) fim(); return; }
+    speechSynthesis.cancel();
+    let u = new SpeechSynthesisUtterance(t);
+    u.lang="pt-BR";
+    if(fim) u.onend=fim;
+    speechSynthesis.speak(u);
+}
+
+/* =====================================================
+                COLETA POR VOZ
+===================================================== */
+let perguntas = [
+    {campo:"nomeUsuario", texto:"Qual é o seu nome?"},
+    {campo:"idadeUsuario", texto:"Qual é a sua idade?"},
+    {campo:"deficienciaUsuario", texto:"Você possui alguma deficiência?"},
+    {campo:"preferenciaNavegacao", texto:"Qual sua preferência de navegação?"},
+    {campo:"interesseUsuario", texto:"Quais são seus interesses?"},
+    {campo:"senhaUsuario", texto:"Diga agora a sua senha."}
+];
+
+let index=0;
+let rec=null;
+
+function iniciarFluxo(){
+    if(!vozAtiva){
+        alert("Ative a voz no menu.");
+        return;
+    }
+    index=0;
+    falar("Vamos começar seu cadastro.", ()=> perguntar());
+}
+
+function perguntar(){
+    if(index>=perguntas.length){
+        exibirDados(true);
+        return;
+    }
+    let p = perguntas[index];
+    falar(p.texto, ()=>{
+        falar("Pode falar agora.", ()=>{
+            document.getElementById("beep").play();
+            iniciarEscuta();
+        });
+    });
+}
+
+function iniciarEscuta(){
+    let Rec = window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Rec){ falar("Seu navegador não suporta reconhecimento de voz."); return;}
+
+    rec = new Rec();
+    rec.lang="pt-BR";
+    rec.start();
+    document.getElementById("escutando").style.display="block";
+
+    rec.onresult = e=>{
+        let txt = e.results[0][0].transcript;
+        document.getElementById(perguntas[index].campo).value = txt;
+        document.getElementById("escutando").style.display="none";
+        index++;
+        setTimeout(()=> perguntar(), 500);
+    };
+
+    rec.onerror = ()=> falar("Não entendi. Tente novamente.");
+}
+
+/* =====================================================
+                   SALVAR CADASTRO
+===================================================== */
+function confirmarManual(){
+    let campos = ["nomeUsuario","idadeUsuario","deficienciaUsuario","preferenciaNavegacao","interesseUsuario","senhaUsuario"];
+    for(let c of campos){
+        if(!document.getElementById(c).value.trim()){
+            falar("Preencha todos os campos.");
+            return;
+        }
+    }
+    exibirDados(false);
+}
+
+function exibirDados(fromVoice){
+    rNome.innerText = nomeUsuario.value;
+    rIdade.innerText = idadeUsuario.value;
+    rDef.innerText = deficienciaUsuario.value;
+    rNav.innerText = preferenciaNavegacao.value;
+    rInteresse.innerText = interesseUsuario.value;
+
+    salvarPerfil();
+
+    resultadoFinal.style.display="block";
+    if(fromVoice) falar("Cadastro concluído com sucesso.");
+}
+
+function salvarPerfil(){
+    let novo = {
+        nome: nomeUsuario.value,
+        idade: idadeUsuario.value,
+        deficiencia: deficienciaUsuario.value,
+        navegacao: preferenciaNavegacao.value,
+        interesse: interesseUsuario.value,
+        senha: senhaUsuario.value
+    };
+
+    // salvar lista completa
+    let lista = JSON.parse(localStorage.getItem("connectUsers") || "[]");
+    lista.push(novo);
+    localStorage.setItem("connectUsers", JSON.stringify(lista));
+
+    // salvar perfil atual
+    localStorage.setItem("perfilConnectUs", JSON.stringify(novo));
+}
+
+function irLogin(){
+    falar("Indo para a tela de login.");
+    setTimeout(()=> window.location.href="login.html", 700);
+}
+
+/* =====================================================
+                OLHAR/OCULTAR SENHA
+===================================================== */
+function toggleSenha(){
+    let inp = senhaUsuario;
+    inp.type = inp.type==="password" ? "text" : "password";
+}
+
+/* =====================================================
+                ACESSIBILIDADE
+===================================================== */
+let textScale=1;
+
+function zoomIn(){
+    textScale+=0.1; if(textScale>2) textScale=2;
+    document.documentElement.style.setProperty("--text-scale", textScale);
+}
+function zoomOut(){
+    textScale-=0.1; if(textScale<0.6) textScale=0.6;
+    document.documentElement.style.setProperty("--text-scale", textScale);
+}
+
+function toggleTheme(){ document.body.classList.toggle("temaClaro"); }
+function pauseAudio(){ speechSynthesis.pause(); }
+function resumeAudio(){ speechSynthesis.resume(); }
+
+function desativarVoz(){ vozAtiva=false; speechSynthesis.cancel(); }
+function ativarVoz(){ vozAtiva=true; falar("Voz ativada"); }
+
+function executarOpcao(v){
+    if(!v)return;
+    let map={zoomIn,zoomOut,toggleTheme,pauseAudio,resumeAudio,desativarVoz,ativarVoz};
+    if(map[v]) map[v]();
+    menuAcessibilidade.value="";
+}
+</script>
+
+</body>
+</html>

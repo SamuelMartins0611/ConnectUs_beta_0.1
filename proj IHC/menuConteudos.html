@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ConnectUs — Conteúdos</title>
+<style>
+  :root { --bg:#000; --fg:#fff; --card:#222; --muted:#777; --accent:#4aa3ff; --btn:#444; }
+  body {
+    margin:0; padding:0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 16px;
+    transition: background .25s,color .25s;
+  }
+
+  /* Tema claro */
+  .temaClaro { --bg:#f2f2f2; --fg:#111; --card:#e8e8e8; --muted:#555; --btn:#ccc; }
+  .temaClaro header { border-bottom-color:#bbb; }
+
+  /* Header */
+  header {
+    background:#111; color:var(--fg);
+    padding:18px 16px; text-align:center;
+    border-bottom:2px solid #444;
+  }
+  header h1 { margin:0; font-size:22px; user-select:none; }
+
+  /* Acessibilidade box */
+  .access-box {
+    position: fixed; left:12px; top:12px; z-index:1200;
+  }
+  .access-box select {
+    padding:10px; border-radius:10px; background:#444; color:#fff; border:none; cursor:pointer;
+    outline:none;
+  }
+
+  /* Toolbar direita */
+  .toolbar {
+    position: fixed; right:12px; top:12px; display:flex; gap:8px; z-index:1200;
+  }
+  .tool-btn { background:var(--btn); color:var(--fg); border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:16px;}
+  .tool-btn:focus { outline:3px solid rgba(74,163,255,.5); }
+
+  /* Container */
+  .wrap { max-width:1000px; margin:22px auto; padding:20px; }
+
+  .lead { text-align:center; font-size:18px; margin-bottom:18px; }
+  .lead p { margin:8px 0; }
+
+  /* Grid cards */
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap:18px;
+    margin-top:18px;
+  }
+
+  .card {
+    background: var(--card);
+    color:var(--fg);
+    border-radius:12px;
+    padding:18px;
+    min-height:140px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    box-shadow: 0 6px 12px rgba(0,0,0,.25);
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.03);
+  }
+  .card:focus { outline:3px solid rgba(74,163,255,.5); }
+  .card h3 { margin:0 0 8px 0; font-size:20px; }
+  .card p { margin:0 0 12px 0; color:var(--muted); font-size:14px; }
+  .card .actions { display:flex; gap:8px; }
+
+  .primary {
+    background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:10px; cursor:pointer;
+  }
+  .secondary { background:transparent; border:1px solid rgba(255,255,255,.12); color:var(--fg); padding:9px 10px; border-radius:10px; cursor:pointer; }
+
+  /* Indicador de escuta */
+  #escutando {
+    display:none; text-align:center; margin-top:14px; color:#0f0; font-weight:bold;
+  }
+
+  /* Footer small controls */
+  .controls { margin-top:22px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .controls button { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; background:var(--btn); color:var(--fg); }
+  .controls button:focus { outline:3px solid rgba(74,163,255,.5); }
+
+  /* Focus visible for keyboard */
+  :focus { outline: none; }
+  .focus-visible { box-shadow: 0 0 0 3px rgba(74,163,255,.25); border-radius:8px; }
+
+  /* Modal Perfil */
+  #modalPerfil {
+    display:none;
+    position:fixed;
+    inset:0;
+    background: rgba(0,0,0,0.72);
+    z-index: 1300;
+    backdrop-filter: blur(3px);
+    padding: 40px 12px;
+    overflow:auto;
+  }
+  #perfilBox {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--card);
+    color: var(--fg);
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid rgba(255,255,255,0.06);
+  }
+  #perfilBox h2 { margin-top:0; text-align:center; }
+  .perfil-info { font-size:16px; line-height:1.6; margin:10px 0; }
+  .perfil-actions { margin-top:14px; display:flex; gap:10px; }
+  .perfil-actions button { flex:1; padding:10px; border-radius:8px; border:none; cursor:pointer; background:var(--btn); color:var(--fg); }
+
+  /* Small responsiveness */
+  @media (max-width:520px) {
+    header h1 { font-size:18px; }
+    .lead { font-size:16px; }
+    .card { padding:14px; min-height:120px; }
+    .toolbar { right:8px; top:8px; gap:6px; }
+    .tool-btn { width:46px; padding:8px; font-size:14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Access controls left -->
+<div class="access-box">
+  <select id="menuAcess" onchange="execAcess(this.value)" aria-label="Opções de acessibilidade">
+    <option value="">⚙</option>
+    <option value="zoomIn">Aumentar texto</option>
+    <option value="zoomOut">Diminuir texto</option>
+    <option value="toggleTheme">Tema claro/escuro</option>
+    <option value="modoCalmo">Modo calmo</option>
+  </select>
+</div>
+
+<!-- Tools right (inclui ícone de perfil) -->
+<div class="toolbar" role="toolbar" aria-label="Ferramentas">
+  <button class="tool-btn" onclick="testarAudio()" title="Testar áudio">🔊</button>
+  <button class="tool-btn" onclick="startVoiceQuestion()" title="Pergunta por voz" id="btnStartVoice">🎙️</button>
+  <button class="tool-btn" onclick="speak('Lendo recomendações')" title="Ler tudo">📣</button>
+  <!-- PERFIL -->
+  <button class="tool-btn" onclick="abrirPerfil()" title="Meu Perfil" id="btnPerfil">👤</button>
+</div>
+
+<header>
+  <h1 id="titulo">ConnectUs — Explorar Conteúdos</h1>
+</header>
+
+<main class="wrap" id="main">
+  <div class="lead" id="lead">
+    <p id="greeting">Olá! O que você gostaria de explorar hoje?</p>
+    <p id="hint">Você pode tocar um card, clicar em <strong>🎙️</strong> para responder por voz, ou usar o teclado.</p>
+  </div>
+
+  <!-- Cards -->
+  <section class="grid" aria-label="Categorias de conteúdo">
+    <article class="card" tabindex="0" role="button" aria-pressed="false" data-key="filmes" onmouseover="safeRead('Filmes — Filmes e séries')" onfocus="safeRead('Filmes — Filmes e séries')" onclick="selecionar('filmes')" onkeydown="handleCardKey(event,'filmes')">
+      <div>
+        <h3>🎬 Filmes</h3>
+        <p>Longas, curtas e séries selecionadas. Conteúdo legendado e audiodescrição quando disponível.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="abrirCategoria(event,'filmes')">Abrir</button>
+        <button class="secondary" onclick="maisInfo(event,'filmes')">Mais</button>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" role="button" aria-pressed="false" data-key="musica" onmouseover="safeRead('Música — Playlists e rádios')" onfocus="safeRead('Música — Playlists e rádios')" onclick="selecionar('musica')" onkeydown="handleCardKey(event,'musica')">
+      <div>
+        <h3>🎧 Música</h3>
+        <p>Playlists por gênero, rádios temáticas e recomendações baseadas no seu perfil.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="abrirCategoria(event,'musica')">Abrir</button>
+        <button class="secondary" onclick="maisInfo(event,'musica')">Mais</button>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" role="button" aria-pressed="false" data-key="teatro" onmouseover="safeRead('Teatro — Espetáculos e peças')" onfocus="safeRead('Teatro — Espetáculos e peças')" onclick="selecionar('teatro')" onkeydown="handleCardKey(event,'teatro')">
+      <div>
+        <h3>🎭 Teatro</h3>
+        <p>Espetáculos, monólogos e conteúdos culturais com opção de legenda e suporte de acessibilidade.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="abrirCategoria(event,'teatro')">Abrir</button>
+        <button class="secondary" onclick="maisInfo(event,'teatro')">Mais</button>
+      </div>
+    </article>
+
+    <article class="card" tabindex="0" role="button" aria-pressed="false" data-key="jogos" onmouseover="safeRead('Jogos — Jogos interativos e educativos')" onfocus="safeRead('Jogos — Jogos interativos e educativos')" onclick="selecionar('jogos')" onkeydown="handleCardKey(event,'jogos')">
+      <div>
+        <h3>🎮 Jogos</h3>
+        <p>Jogos acessíveis, relaxantes e educativos. Filtro por dificuldade e modo de controle.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="abrirCategoria(event,'jogos')">Abrir</button>
+        <button class="secondary" onclick="maisInfo(event,'jogos')">Mais</button>
+      </div>
+    </article>
+  </section>
+
+  <div id="escutando" role="status" aria-live="polite">🎧 Ouvindo você…</div>
+
+  <div class="controls" style="margin-top:28px;">
+    <button onclick="speak('Vou repetir a pergunta')" class="tool-btn">🔁 Repetir</button>
+    <button onclick="startVoiceQuestion()" class="tool-btn" id="btnVoiceQuestion">❓ Perguntar por voz</button>
+    <button onclick="irParaHome()" class="tool-btn">🏠 Voltar</button>
+  </div>
+</main>
+
+<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<!-- Modal Perfil -->
+<div id="modalPerfil" aria-hidden="true" aria-labelledby="perfilTitulo" role="dialog">
+  <div id="perfilBox" role="document">
+    <h2 id="perfilTitulo">👤 Meu Perfil</h2>
+
+    <div class="perfil-info"><strong>Nome:</strong> <span id="pNome">—</span></div>
+    <div class="perfil-info"><strong>Idade:</strong> <span id="pIdade">—</span></div>
+    <div class="perfil-info"><strong>Deficiência:</strong> <span id="pDef">—</span></div>
+    <div class="perfil-info"><strong>Navegação:</strong> <span id="pNav">—</span></div>
+    <div class="perfil-info"><strong>Interesses:</strong> <span id="pInter">—</span></div>
+
+    <div class="perfil-actions">
+      <button id="btnFecharPerfil" class="perfil-actions-btn" onclick="fecharPerfil()">Fechar</button>
+      <button onclick="editarPerfil()" class="perfil-actions-btn">Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- VLibras -->
+<div vw class="enabled" style="z-index:1300">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<div vw class="enabled" style="z-index:1300">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script> try { new window.VLibras.Widget('https://vlibras.gov.br/app'); } catch(e) { console.warn('VLibras init failed', e); } </script>
+
+<script>
+/* ====== Helpers de fala (TTS) ====== */
+function speak(text, opts = {}) {
+  try { window.speechSynthesis.cancel(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = opts.lang || 'pt-BR';
+  if (opts.rate) u.rate = opts.rate;
+  if (opts.pitch) u.pitch = opts.pitch;
+  if (opts.onend) u.onend = opts.onend;
+  try { speechSynthesis.speak(u); } catch(e){}
+}
+
+/* safeRead: recebe string ou elemento */
+function safeRead(target) {
+  if (!target) return;
+  const txt = (typeof target === 'string') ? target : (target.innerText || target.textContent || '');
+  if (txt.trim()) speak(txt);
+}
+
+/* testar áudio */
+function testarAudio() { speak('Teste de áudio funcionando'); }
+
+/* ====== Zoom / Tema / Modo calmo ====== */
+let zoom = 1;
+function execAcess(v) {
+  if (!v) return;
+  const m = { zoomIn:zoomIn, zoomOut:zoomOut, toggleTheme:toggleTheme, modoCalmo:modoCalmo };
+  if (typeof m[v] === 'function') m[v]();
+  // limpar select
+  document.getElementById('menuAcess').value = '';
+}
+function zoomIn(){ zoom = +(zoom + 0.10).toFixed(2); document.body.style.zoom = zoom; speak('Zoom aumentado'); }
+function zoomOut(){ zoom = +(zoom - 0.10).toFixed(2); if (zoom < 0.6) zoom = 0.6; document.body.style.zoom = zoom; speak('Zoom reduzido'); }
+function toggleTheme(){ document.body.classList.toggle('temaClaro'); speak(document.body.classList.contains('temaClaro') ? 'Tema claro ativado' : 'Tema escuro ativado'); }
+function modoCalmo(){ document.body.classList.toggle('modo-calmo'); speak('Modo calmo ativado'); }
+
+/* ====== Navegação simples (abrir category) ====== */
+function abrirCategoria(e, key) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  speak('Abrindo ' + labelOf(key));
+  setTimeout(()=> {
+    if (key === 'filmes') window.location.href = 'filmes.html';
+    if (key === 'musica') window.location.href = 'musica.html';
+    if (key === 'teatro') window.location.href = 'teatro.html';
+    if (key === 'jogos') window.location.href = 'jogos.html';
+  }, 600);
+}
+
+/* abrir mais info modal (simples alert para demo) */
+function maisInfo(e,key){ if (e && e.stopPropagation) e.stopPropagation(); speak('Mais informações sobre ' + labelOf(key)); setTimeout(()=> alert('Mais info: '+ labelOf(key)), 600); }
+function labelOf(key){ return ({filmes:'Filmes', musica:'Música', teatro:'Teatro', jogos:'Jogos'})[key]||key; }
+
+/* seleção visual do card (quando clicar) */
+function selecionar(key) {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(c=> c.style.borderColor = 'rgba(255,255,255,.03)');
+  const card = document.querySelector(`.card[data-key="${key}"]`);
+  if (card) card.style.borderColor = 'rgba(74,163,255,.6)';
+  speak('Selecionado ' + labelOf(key));
+}
+
+/* keyboard handler on card: Enter or Space opens */
+function handleCardKey(ev,key){
+  if (ev.key === 'Enter' || ev.key === ' ') {
+    ev.preventDefault();
+    abrirCategoria(null,key);
+  }
+}
+
+/* ====== Pergunta por voz (qual prefere?) ====== */
+let recog = null;
+let recogRunning = false;
+function startVoiceQuestion(){
+  speak('Qual conteúdo você prefere explorar? Filmes, música, teatro ou jogos?', { onend: ()=> {
+    setTimeout(()=> startRecognition(handleVoiceAnswer), 250);
+  }});
+  document.getElementById('escutando').style.display = 'block';
+}
+
+function startRecognition(onResult){
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  if (!SpeechRec) {
+    speak('Seu navegador não suporta reconhecimento de voz. Por favor, escolha tocando um card.');
+    document.getElementById('escutando').style.display = 'none';
+    return;
+  }
+  if (recogRunning) return;
+  try { recog = new SpeechRec(); } catch(e){ recog = null; }
+  if (!recog) { speak('Falha ao iniciar reconhecimento'); document.getElementById('escutando').style.display='none'; return; }
+
+  recog.lang = 'pt-BR';
+  recog.interimResults = false;
+  recog.maxAlternatives = 1;
+  recogRunning = true;
+  let heard = false;
+
+  recog.onresult = function(evt){
+    heard = true;
+    const t = (evt.results && evt.results[0] && evt.results[0][0].transcript) ? evt.results[0][0].transcript.toLowerCase() : '';
+    document.getElementById('escutando').style.display = 'none';
+    recogRunning = false;
+    handleVoiceAnswer(t);
+  };
+
+  recog.onerror = function(err){
+    console.warn('rec error', err);
+    recogRunning = false;
+    document.getElementById('escutando').style.display = 'none';
+    speak('Não entendi. Tente novamente ou escolha tocando um card.');
+  };
+
+  recog.onend = function(){
+    recogRunning = false;
+    if (!heard) {
+      document.getElementById('escutando').style.display = 'none';
+      speak('Não ouvi nada. Repita ou escolha tocando um card.');
+    }
+  };
+
+  try { recog.start(); } catch(e){ console.error(e); recogRunning=false; document.getElementById('escutando').style.display='none'; speak('Erro iniciando microfone.'); }
+  setTimeout(()=>{ try { if (recogRunning && recog) recog.stop(); } catch(e){} }, 9000);
+}
+
+function handleVoiceAnswer(textOrTranscript){
+  const t = (typeof textOrTranscript === 'string') ? textOrTranscript.toLowerCase() : '';
+  if (t.includes('filme') || t.includes('cinema') || t.includes('série')) { selectAndOpen('filmes'); return; }
+  if (t.includes('música') || t.includes('musica') || t.includes('playlist') || t.includes('canção') || t.includes('cancao')) { selectAndOpen('musica'); return; }
+  if (t.includes('teatro') || t.includes('peça') || t.includes('peca')) { selectAndOpen('teatro'); return; }
+  if (t.includes('jogo') || t.includes('jogos') || t.includes('game')) { selectAndOpen('jogos'); return; }
+  speak('Não reconheci a categoria. Por favor, toque no card desejado ou tente novamente.');
+}
+
+function selectAndOpen(key){
+  selecionar(key);
+  speak('Abrindo ' + labelOf(key));
+  setTimeout(()=> abrirCategoria(null,key), 700);
+}
+
+/* ====== Navigation helpers ====== */
+function irParaHome(){
+  speak('Voltando para a tela inicial.');
+  setTimeout(()=> window.location.href = 'test.html', 700);
+}
+
+/* ====== PERFIL: abrir / fechar / editar ====== */
+function abrirPerfil(){
+  const dados = JSON.parse(localStorage.getItem('perfilConnectUs') || '{}');
+  document.getElementById('pNome').textContent  = dados.nome || 'Não informado';
+  document.getElementById('pIdade').textContent = dados.idade || 'Não informado';
+  document.getElementById('pDef').textContent   = dados.deficiencia || 'Não informado';
+  document.getElementById('pNav').textContent   = dados.navegacao || 'Não informado';
+  document.getElementById('pInter').textContent = dados.interesse || 'Não informado';
+
+  // abrir modal e focar no botão fechar
+  const modal = document.getElementById('modalPerfil');
+  modal.style.display = 'block';
+  modal.setAttribute('aria-hidden','false');
+  setTimeout(()=> {
+    const btn = document.getElementById('btnFecharPerfil');
+    if (btn) btn.focus();
+  }, 100);
+
+  speak('Exibindo seu perfil. Para sair, pressione ESC ou o botão fechar.');
+}
+
+function fecharPerfil(){
+  const modal = document.getElementById('modalPerfil');
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden','true');
+  speak('Perfil fechado.');
+}
+
+function editarPerfil(){
+  // simples redirecionamento para a tela inicial para editar (ou você pode abrir um formulário inline)
+  speak('Abrindo a tela de edição de perfil.');
+  setTimeout(()=> window.location.href = 'index.html', 600);
+}
+
+/* ====== keyboard global: ESC trata modal e reconhecimento ====== */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // fechar modal se aberto
+    const modal = document.getElementById('modalPerfil');
+    if (modal && modal.style.display === 'block') {
+      fecharPerfil();
+      return;
+    }
+    // stop recognition if running
+    try { if (recogRunning && recog) recog.stop(); } catch(e){}
+    document.getElementById('escutando').style.display = 'none';
+    speak('Operação cancelada.');
+  }
+});
+
+/* ====== keyboard accessibility improvements: allow enter on toolbar buttons ====== */
+document.addEventListener('keyup', (e)=> {
+  // allow Enter on focused tool buttons (space/enter)
+  if ((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('tool-btn')) {
+    document.activeElement.click();
+  }
+});
+</script>
+</body>
+</html>

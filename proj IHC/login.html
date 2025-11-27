@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConnectUs — Login</title>
+
+<style>
+:root{
+  --bg:#000;
+  --card:#111;
+  --fg:#fff;
+  --accent:#4aa3ff;
+  --muted:#888;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:Arial, sans-serif;
+  height:100vh;
+}
+
+/* ---------- CABEÇALHO ---------- */
+header {
+    width:100%;
+    background:#111;
+    padding:20px;
+    text-align:center;
+    border-bottom:2px solid #444;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:900;
+}
+
+header h1 {
+    margin:0;
+    font-size:28px;
+}
+
+/* ---------- DROPDOWN ---------- */
+.top-acessibilidade select {
+    position: fixed;
+    top:20px; right:20px;
+    padding: 5px;
+    border-radius:8px;
+    background:#444;
+    color:#fff;
+    border:none;
+    font-size:30px;
+    cursor:pointer;
+    width: 60px;
+    height: 50px;
+    text-align:center;
+}
+
+/* ---------- CONTAINER LOGIN ---------- */
+.container{
+  background:var(--card);
+  padding:30px;
+  width:400px;
+  border-radius:12px;
+  box-shadow:0 0 14px rgba(0,0,0,.4);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin:160px auto 0 auto;
+}
+
+h1{
+  text-align:center;
+  margin-top:0;
+  margin-bottom:20px;
+}
+
+/* ---------- CAMPOS ---------- */
+.inputWrapper{
+  width:100%;
+  position:relative;
+  display:flex;
+  justify-content:center;
+}
+
+input{
+  width:100%;
+  padding:12px 45px 12px 12px;
+  margin-bottom:15px;
+  border-radius:8px;
+  border:1px solid #333;
+  background:#000;
+  color:#fff;
+  font-size:16px;
+  box-sizing:border-box;
+}
+
+input:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+/* ---------- BOTÃO MOSTRAR/OCULTAR SENHA ---------- */
+.toggleSenhaBtn {
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    background:none !important;
+    border:none !important;
+    cursor:pointer;
+    font-size:22px;
+    padding:0;
+    margin:0;
+    color:#fff !important;
+    width:28px;
+    height:28px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.temaClaro .toggleSenhaBtn {
+    color:#000 !important;
+}
+
+/* ---------- BOTÕES ---------- */
+button{
+  width:100%;
+  padding:12px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+button:hover{
+  background:#6bbaff;
+}
+
+/* Botão de voz */
+.btnVozLogin{
+    width:100%;
+    padding:12px;
+    background:#333;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin-bottom:12px;
+    border:1px solid #555;
+}
+
+.btnVozLogin:hover{
+    background:#444;
+}
+
+/* ---------- LINK ---------- */
+a{
+  color:var(--accent);
+  display:block;
+  margin-top:12px;
+  text-align:center;
+  text-decoration:none;
+}
+
+a:hover{
+  text-decoration:underline;
+}
+
+/* ---------- ERROS ---------- */
+#errorMsg{
+  color:#ff6b6b;
+  text-align:center;
+  margin-top:10px;
+  min-height:20px;
+}
+
+/* Indicador de escuta */
+#escutando{
+    text-align:center;
+    margin-top:10px;
+    color:#4aa3ff;
+    font-size:18px;
+    font-weight:bold;
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- CABEÇALHO -->
+<header>
+    <h1>ConnectUs</h1>
+
+    <div class="top-acessibilidade">
+        <select id="menuAcessibilidade" onchange="executarOpcao(this.value)" aria-label="Opções de acessibilidade">
+            <option value="">⚙</option>
+            <option value="zoomIn">Aumentar Zoom</option>
+            <option value="zoomOut">Diminuir Zoom</option>
+            <option value="modoCalmo">Modo Calmo</option>
+            <option value="pauseAudio">Pausar Leitura</option>
+            <option value="resumeAudio">Retomar Leitura</option>
+            <option value="toggleTheme">Tema Claro/Escuro</option>
+            <option value="desativarVoz">Desativar Voz</option>
+            <option value="ativarVoz">Ativar Voz</option>
+        </select>
+    </div>
+</header>
+
+
+<!-- CONTEÚDO LOGIN -->
+<div class="container">
+  <h1 onmouseover="speak('Tela de login. Insira seu nome e senha para entrar.')">Login</h1>
+
+  <div id="escutando">🎤 Ouvindo…</div>
+
+  <!-- Campo usuário -->
+  <div class="inputWrapper">
+    <input type="text" id="loginUser" placeholder="Nome de usuário"
+           onfocus="speak('Digite seu nome de usuário')" />
+  </div>
+
+  <!-- Campo senha + botão mostrar -->
+  <div class="inputWrapper">
+    <input type="password" id="loginPass" placeholder="Senha"
+           onfocus="speak('Digite sua senha')" />
+    <button class="toggleSenhaBtn" onclick="toggleSenha()" aria-label="Mostrar ou ocultar senha">👁️</button>
+  </div>
+
+  <button class="btnVozLogin" onclick="loginPorVoz()">🎤 Preencher Login por Voz</button>
+
+  <button onclick="login()" onmouseover="speak('Entrar no sistema')">Entrar</button>
+
+  <a href="test.html" onmouseover="speak('Criar uma nova conta')">Criar nova conta</a>
+
+  <div id="errorMsg"></div>
+</div>
+
+
+<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+
+<script>
+/* ================================
+   LEITOR DE TEXTO (TTS)
+================================ */
+let vozAtiva = true;
+
+function speak(text, callback=null){
+    if (!vozAtiva){
+        if(callback) callback();
+        return;
+    }
+
+    try{ speechSynthesis.cancel(); }catch(e){}
+
+    let u = new SpeechSynthesisUtterance(text);
+    u.lang = "pt-BR";
+    u.rate = 0.9;
+
+    if(callback){
+        u.onend = () => setTimeout(callback, 600);
+    }
+
+    speechSynthesis.speak(u);
+}
+
+
+/* ================================
+   MOSTRAR SENHA
+================================ */
+function toggleSenha(){
+    const campo = document.getElementById("loginPass");
+    const btn = document.querySelector(".toggleSenhaBtn");
+
+    if(campo.type === "password"){
+        campo.type = "text";
+        btn.innerText = "🙈";
+        speak("Senha visível");
+    } else {
+        campo.type = "password";
+        btn.innerText = "👁️";
+        speak("Senha oculta");
+    }
+}
+
+
+/* ================================
+      LOGIN AUTOMÁTICO POR ENTER
+================================ */
+document.addEventListener("keydown", e=>{
+    if(e.key === "Enter"){
+        login();
+    }
+});
+
+
+/* ================================
+         SISTEMA DE LOGIN
+================================ */
+function login(){
+  let user = loginUser.value.trim();
+  let pass = loginPass.value.trim();
+  let msg  = errorMsg;
+
+  const data = JSON.parse(localStorage.getItem("perfilConnectUs") || "{}");
+
+  if(!data || !data.nome || !data.senha){
+    msg.innerText = "Nenhuma conta cadastrada.";
+    speak("Nenhuma conta cadastrada.");
+    return;
+  }
+
+  if(user === data.nome && pass === data.senha){
+    speak("Login realizado com sucesso. Bem vindo!");
+    setTimeout(()=> window.location.href = "menuconteudos.html", 800);
+  } else {
+    msg.innerText = "Usuário ou senha incorretos.";
+    speak("Usuário ou senha incorretos.");
+  }
+}
+
+
+/* ======================================================
+      LOGIN POR VOZ — COM AVISOS + PAUSAS + BEEP
+====================================================== */
+function loginPorVoz(){
+
+    if(!vozAtiva){
+        alert("A voz está desativada. Ative no menu de acessibilidade.");
+        return;
+    }
+
+    speak(
+        "Vamos preencher seu login por voz. Eu vou te orientar com calma.",
+        () => {
+            speak(
+                "Primeiro, vamos registrar o seu nome de usuário.",
+                () => {
+                    speak(
+                        "Quando ouvir o sinal sonoro, fale claramente seu nome de usuário.",
+                        () => {
+                            setTimeout(() => iniciarReconhecimento("usuario"), 1400);
+                        }
+                    );
+                }
+            );
+        }
+    );
+}
+
+function iniciarReconhecimento(tipo){
+    const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if(!Rec){
+        alert("Seu navegador não suporta reconhecimento de voz.");
+        return;
+    }
+
+    let escutando = document.getElementById("escutando");
+    let beep = document.getElementById("beep");
+
+    let rec = new Rec();
+    rec.lang = "pt-BR";
+    rec.interimResults = false;
+
+    escutando.style.display = "block";
+
+    setTimeout(() => {
+        try {
+            beep.currentTime = 0;
+            beep.play();
+        } catch(e){}
+    }, 500);
+
+    let ouviu = false;
+
+    rec.start();
+
+    rec.onresult = event => {
+        ouviu = true;
+        let texto = event.results[0][0].transcript.trim();
+
+        if(tipo === "usuario"){
+            loginUser.value = texto;
+
+            speak(
+                "Entendi. Seu nome de usuário é " + texto + ".",
+                () => {
+                    speak(
+                        "Agora vamos registrar sua senha.",
+                        () => {
+                            speak(
+                                "Quando ouvir o sinal novamente, fale sua senha devagar e com clareza.",
+                                () => {
+                                    setTimeout(() => iniciarReconhecimento("senha"), 1400);
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+
+        else if(tipo === "senha"){
+            loginPass.value = texto;
+
+            speak("Senha registrada com sucesso. Agora você pode clicar no botão entrar.");
+        }
+    };
+
+    rec.onerror = () => {
+        escutando.style.display = "none";
+        speak("Não consegui entender. Vamos tentar de novo.",
+            () => setTimeout(()=> iniciarReconhecimento(tipo), 1200)
+        );
+    };
+
+    rec.onend = () => {
+        escutando.style.display = "none";
+
+        if(!ouviu){
+            speak(
+                "Não detectei nenhuma fala. Vamos tentar novamente.",
+                () => setTimeout(()=> iniciarReconhecimento(tipo), 1400)
+            );
+        }
+    };
+}
+
+
+/* ================================
+   ACESSIBILIDADE
+================================ */
+let fontScale = 1;
+
+function zoomIn(){
+    fontScale += 0.1;
+    if(fontScale > 2.0) fontScale = 2.0;
+    document.documentElement.style.fontSize = (fontScale * 100) + "%";
+    speak("Tamanho do texto aumentado.");
+}
+
+function zoomOut(){
+    fontScale -= 0.1;
+    if(fontScale < 0.6) fontScale = 0.6;
+    document.documentElement.style.fontSize = (fontScale * 100) + "%";
+    speak("Tamanho do texto reduzido.");
+}
+
+function toggleTheme(){
+    document.body.classList.toggle("temaClaro");
+}
+
+function modoCalmo(){
+    document.body.classList.toggle("modo-calmo");
+}
+
+function pauseAudio(){ speechSynthesis.pause(); }
+function resumeAudio(){ speechSynthesis.resume(); }
+
+function desativarVoz(){
+    vozAtiva = false;
+    speechSynthesis.cancel();
+    alert("Voz desativada.");
+}
+
+function ativarVoz(){
+    vozAtiva = true;
+    speak("Voz ativada.");
+}
+
+function executarOpcao(v){
+  if(!v) return;
+  const map = { zoomIn, zoomOut, toggleTheme, modoCalmo, pauseAudio, resumeAudio, desativarVoz, ativarVoz };
+  if(map[v]) map[v]();
+  menuAcessibilidade.value = "";
+}
+</script>
+
+</body>
+</html>
