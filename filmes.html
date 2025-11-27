@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ConnectUs — Cinema</title>
+<style>
+  :root{
+    --bg:#000; --fg:#fff; --card:#141414; --muted:#9b9b9b; --accent:#4aa3ff; --btn:#333;
+  }
+  body{ margin:0; font-family:Arial, sans-serif; background:var(--bg); color:var(--fg); transition:background .25s,color .25s; }
+  .temaClaro{ --bg:#f5f5f5; --fg:#111; --card:#fff; --muted:#555; --btn:#ddd; }
+  header{ padding:16px; text-align:center; background:#111; border-bottom:2px solid #333; position:sticky; top:0; z-index:50;}
+  header h1{ margin:0; font-size:20px; }
+  .wrap{ max-width:1200px; margin:18px auto; padding:12px; }
+  .controls-row{ display:flex; flex-direction:column; gap:18px;  align-items:center;  width: 300px ; margin: 0 auto;}
+  .left-controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  #resultsInfo{width: 300px; text-align: center;}
+  .search-box{ display:flex; gap:8px; align-items:center; justify-content:center ; width: 300px;}
+  .search-box input[type="search"]{ padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.08); background:transparent; color:var(--fg); width:320px; }
+  .icon-btn{ background:var(--btn); color:var(--fg); border:none; padding:10px; border-radius:10px; cursor:pointer; font-size:16px; }
+  .filters{ margin-top:14px; display:grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap:12px; align-items:start; }
+  .filter-card{ background:var(--card); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,.03); font-size:14px; }
+  .filter-card label{ display:block; margin-bottom:6px; font-weight:600; }
+  .filter-card select, .filter-card input[type="checkbox"], .filter-card input[type="text"]{ width:100%; padding:8px 10px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,.06); color:var(--fg); }
+  .filter-actions{ margin-top:12px; display:flex; gap:8px; }
+  .btn-primary{ background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:10px; cursor:pointer; }
+  .btn-secondary{ background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--fg); padding:10px 12px; border-radius:10px; cursor:pointer; }
+  .grid{ margin-top:18px; display:grid; gap:16px; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); }
+  .card{ background:var(--card); border-radius:12px; padding:10px; display:flex; flex-direction:column; gap:8px; border:1px solid rgba(255,255,255,.03); cursor:pointer; }
+  .poster{ width:100%; height:300px; background-size:cover; background-position:center; border-radius:8px; }
+  .meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .title{ font-size:16px; margin:0; }
+  .tags{ color:var(--muted); font-size:13px; margin:0; }
+  .card .actions{ margin-top:auto; display:flex; gap:8px; }
+  .small{ font-size:13px; color:var(--muted); }
+  #escutando{ display:none; margin-top:10px; color:#0f0; font-weight:700; text-align:center; }
+  #searchInput{ display:flex; border-radius:10px; padding: 10px ; border-style: none;}
+  
+  /* Modal details */
+  #modalDetails{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:2000; padding:20px; overflow:auto; }
+  #modalInner{ max-width:900px; margin:40px auto; background:var(--card); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,.04); color:var(--fg); }
+  .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .col{ flex:1; min-width:220px; }
+  .badge{ display:inline-block; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,.04); font-size:13px; margin-right:6px; }
+  /* perfil button */
+  .profile-box{ position:fixed; right:12px; top:12px; z-index:1200; }
+  .profile-btn{ background:var(--btn); border:none; padding:10px 12px; border-radius:10px; cursor:pointer; color:var(--fg); }
+  /* responsive */
+  @media (max-width:720px){ .search-box input[type="search"]{ width:160px; } .poster{ height:220px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 onmouseover="safeRead('Cinema — Explorar filmes')">ConnectUs — Cinema</h1>
+</header>
+
+<!-- profile quick -->
+<div class="profile-box" aria-hidden="false">
+  <button class="profile-btn" onclick="abrirPerfilModal()" title="Meu perfil">👤 Perfil</button>
+</div>
+
+<main class="wrap" id="main">
+  <div class="controls-row">
+    <div class="left-controls">
+      <div class="search-box" role="search" aria-label="Busca de filmes">
+        <input id="searchInput" placeholder="Pesquisar título, ator, diretor..." aria-label="Pesquisar" />
+        <button class="icon-btn" id="btnSearch" onclick="applyFilters()" title="Pesquisar">🔎</button>
+        <button class="icon-btn" id="btnMic" title="Pesquisar por voz" onclick="startVoiceSearch()">🎙️</button>
+      </div>
+      <div class="small" id="resultsInfo" aria-live="polite">Mostrando todos os filmes</div>
+    </div>
+
+    <div>
+      <button class="btn-primary" onclick="resetFilters()">Limpar filtros</button>
+      <button class="btn-secondary" onclick="scrollToGrid()">Ir para lista</button>
+    </div>
+  </div>
+
+  <!-- filters -->
+  <div class="filters" role="region" aria-label="Filtros de busca">
+    <div class="filter-card">
+      <label for="genre">Gênero</label>
+      <select id="genre" aria-label="Filtrar por gênero">
+        <option value="">Todos</option>
+        <option>ação</option><option>aventura</option><option>comédia</option><option>drama</option>
+        <option>romance</option><option>terror</option><option>suspense</option><option>ficção científica</option>
+        <option>fantasia</option><option>animação</option><option>documentário</option><option>nacional</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label for="year">Ano </label>
+      <select id="year" aria-label="Filtrar por ano">
+        <option value="">Qualquer</option>
+        <option value="2023">2023–2025</option>
+        <option value="2018">2018–2022</option>
+        <option value="2010">2010–2017</option>
+        <option value="2000">2000–2009</option>
+        <option value="1990">1990–1999</option>
+        <option value="1980">antes de 1990</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label for="duration">Duração</label>
+      <select id="duration" aria-label="Filtrar por duração">
+        <option value="">Qualquer</option>
+        <option value="short">Curta (0–40)</option>
+        <option value="medium">Média (40–90)</option>
+        <option value="long">Longa (90–150)</option>
+        <option value="epic">Épico (150+)</option>
+      </select>
+    </div>
+
+
+    <div class="filter-card">
+      <label for="country">Origem</label>
+      <select id="country" aria-label="Filtrar por país">
+        <option value="">Qualquer</option>
+        <option>Brasil</option><option>EUA</option><option>Europa</option><option>Ásia</option><option>Coreia</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label for="age">Classificação</label>
+      <select id="age" aria-label="Filtrar por classificação">
+        <option value="">Qualquer</option>
+        <option value="L">Livre</option><option value="10">+10</option><option value="12">+12</option><option value="14">+14</option>
+        <option value="16">+16</option><option value="18">+18</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label for="sort">Ordenar por</label>
+      <select id="sort" aria-label="Ordenar resultados">
+        <option value="popular">Mais populares</option>
+        <option value="rating">Melhor avaliados</option>
+        <option value="new">Lançamentos</option>
+        <option value="duration">Duração</option>
+      </select>
+    </div>
+
+     <div class="filter-card">
+      <label>Acessibilidade</label>
+      <div><label><input type="checkbox" id="ad" /> Audiodescrição</label></div>
+      <div><label><input type="checkbox" id="cc" /> Legendas (CC)</label></div>
+      <div><label><input type="checkbox" id="libras" /> Libras</label></div>
+      <div style="margin-top:8px;"><label><input type="checkbox" id="highContrast" /> Contraste aprimorado</label></div>
+    </div>
+  </div>
+
+  <div id="escutando" role="status" aria-live="polite">🎧 Ouvindo você…</div>
+
+  <!-- results -->
+  <section id="resultsGrid" class="grid" aria-label="Resultados de filmes"></section>
+
+  <div style="margin-top:18px; text-align:center;">
+    <small class="small">Exemplo de catálogo com capas (placeholder usado a partir do arquivo enviado).</small>
+  </div>
+</main>
+
+<!-- modal details -->
+<div id="modalDetails" aria-hidden="true">
+  <div id="modalInner" role="dialog" aria-label="Detalhes do filme">
+    <button class="icon-btn" onclick="closeModal()" style="float:right">✖</button>
+    <div class="row">
+      <div class="col" id="modalPoster" style="min-width:260px; height:360px; background-size:cover; border-radius:8px;"></div>
+      <div class="col">
+        <h2 id="modalTitle">Título</h2>
+        <p id="modalTags" class="small"></p>
+        <p id="modalDesc"></p>
+        <div style="margin-top:12px;">
+          <span class="badge" id="modalDuration"></span>
+          <span class="badge" id="modalYear"></span>
+          <span class="badge" id="modalAge"></span>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button class="btn-primary" onclick="playDemo()">▶ Assistir (exemplo)</button>
+          <button class="btn-secondary" onclick="speakDetails()">🔊 Ouvir detalhes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- perfil modal (simples) -->
+<div id="perfilModal" style="display:none; position:fixed; right:12px; top:60px; z-index:1500; background:var(--card); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,.04);">
+  <div style="font-weight:700">Seu Perfil</div>
+  <div class="small" id="miniNome">Nome: —</div>
+  <div class="small" id="miniInter">Interesse: —</div>
+  <div style="margin-top:8px;">
+    <button class="btn-secondary" onclick="closePerfilModal()">Fechar</button>
+    <button class="btn-primary" onclick="editarPerfil()">Editar</button>
+  </div>
+</div>
+
+<!-- VLibras -->
+<div vw class="enabled" style="z-index:1300">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script> new window.VLibras && new window.VLibras.Widget('https://vlibras.gov.br/app'); </script>
+
+<script>
+/* ---------- Sample dataset (títulos reais) ----------
+   Usamos o arquivo enviado (local path) para poster de exemplo.
+   Substitua poster pelo caminho real de cada imagem se quiser.
+*/
+const POSTER_PLACEHOLDER = '/mnt/data/fa144841-e950-433c-880c-321b334cc53d.png';
+
+const films = [
+  { id:1, title:'Vingadores: Ultimato', genre:'ação', year:2019, duration:181, country:'EUA', age:'14', rating:8.4, ad:true, cc:true, libras:false, desc:'Super-heróis unem forças para reverter o estalo.' , poster:"img/utlimato.jpg"},
+  { id:2, title:'O Poderoso Chefão', genre:'drama', year:1972, duration:175, country:'EUA', age:'16', rating:9.2, ad:false, cc:true, libras:false, desc:'Família mafiosa e poder.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_bestv2/oJagOzBu9Rdd9BrciseCm3U3MCU.jpg"},
+  { id:3, title:'Parasita', genre:'suspense', year:2019, duration:132, country:'Coreia', age:'16', rating:8.6, ad:false, cc:true, libras:false, desc:'Crítica social e tensão crescente.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_bestv2/igw938inb6Fy0YVcwIyxQ7Lu5FO.jpg"},
+  { id:4, title:'Cidade de Deus', genre:'drama', year:2002, duration:130, country:'Brasil', age:'16', rating:8.6, ad:false, cc:true, libras:false, desc:'História da favela e ascensão do crime.' , poster:POSTER_PLACEHOLDER},
+  { id:5, title:'Toy Story', genre:'animação', year:1995, duration:81, country:'EUA', age:'L', rating:8.3, ad:false, cc:true, libras:false, desc:'Brinquedos que ganham vida.' , poster:POSTER_PLACEHOLDER},
+  { id:6, title:'Coringa', genre:'drama', year:2019, duration:122, country:'EUA', age:'18', rating:8.4, ad:false, cc:false, libras:false, desc:'Origem do vilão e crítica à sociedade.' , poster:POSTER_PLACEHOLDER},
+  { id:7, title:'Intocáveis', genre:'comédia', year:2011, duration:112, country:'Europa', age:'14', rating:8.5, ad:true, cc:true, libras:false, desc:'Amizade entre homem rico e cuidador.' , poster:POSTER_PLACEHOLDER},
+  { id:8, title:'1917', genre:'guerra', year:2019, duration:119, country:'Europa', age:'16', rating:8.3, ad:false, cc:true, libras:false, desc:'Missão em tempo real durante a guerra.' , poster:POSTER_PLACEHOLDER},
+  { id:9, title:'A Origem', genre:'ficção científica', year:2010, duration:148, country:'EUA', age:'14', rating:8.8, ad:false, cc:true, libras:false, desc:'Sonhos dentro de sonhos.' , poster:POSTER_PLACEHOLDER},
+  { id:10, title:'Bacurau', genre:'drama', year:2019, duration:131, country:'Brasil', age:'16', rating:7.6, ad:false, cc:true, libras:false, desc:'Vila no sertão reage a ameaças externas.' , poster:POSTER_PLACEHOLDER}
+];
+
+/* ---------- Utilities ---------- */
+function speak(text, opts={}) {
+  try { window.speechSynthesis.cancel(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = opts.lang || 'pt-BR';
+  if (opts.rate) u.rate = opts.rate;
+  if (opts.onend) u.onend = opts.onend;
+  try { speechSynthesis.speak(u); } catch(e){}
+}
+
+function safeRead(text){
+  if (!text) return;
+  speak(text);
+}
+
+/* ---------- Render grid ---------- */
+function renderGrid(list){
+  const grid = document.getElementById('resultsGrid');
+  grid.innerHTML = '';
+  if (!list.length) {
+    document.getElementById('resultsInfo').innerText = 'Nenhum resultado.';
+    return;
+  }
+  document.getElementById('resultsInfo').innerText = `Mostrando ${list.length} resultado(s)`;
+  list.forEach(f=>{
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.setAttribute('tabindex','0');
+    el.setAttribute('role','button');
+    el.setAttribute('data-id', f.id);
+    el.innerHTML = `
+      <div class="poster" style="background-image:url('${f.poster}')"></div>
+      <div>
+        <h3 class="title">${f.title}</h3>
+        <p class="tags">${f.genre} • ${f.duration} min • ${f.year}</p>
+        <p class="small">${f.country} • Class.: ${f.age} • Avaliação: ${f.rating}</p>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" onclick="abrirDetalhes(event,${f.id})">Assistir</button>
+        <button class="btn-secondary" onclick="abrirDetalhes(event,${f.id})">Detalhes</button>
+      </div>
+    `;
+    // hover/focus read
+    el.addEventListener('mouseover', ()=> safeRead(f.title + ', ' + f.genre));
+    el.addEventListener('focus', ()=> safeRead(f.title + ', ' + f.genre));
+    grid.appendChild(el);
+  });
+}
+
+/* ---------- Filtering logic ---------- */
+function applyFilters(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const genre = document.getElementById('genre').value.toLowerCase();
+  const yearSel = document.getElementById('year').value;
+  const duration = document.getElementById('duration').value;
+  const ad = document.getElementById('ad').checked;
+  const cc = document.getElementById('cc').checked;
+  const libras = document.getElementById('libras').checked;
+  const country = document.getElementById('country').value.toLowerCase();
+  const age = document.getElementById('age').value;
+
+  let out = films.filter(f=>{
+    // search by title, desc
+    if (q) {
+      const inText = (f.title + ' ' + f.desc + ' ' + f.country).toLowerCase();
+      if (!inText.includes(q)) return false;
+    }
+    if (genre && f.genre.toLowerCase() !== genre) return false;
+    if (country && f.country.toLowerCase() !== country) return false;
+    if (age && f.age !== age) return false;
+
+    if (yearSel) {
+      if (yearSel === '2023' && f.year < 2023) return false;
+      if (yearSel === '2018' && (f.year < 2018 || f.year > 2022)) return false;
+      if (yearSel === '2010' && (f.year < 2010 || f.year > 2017)) return false;
+      if (yearSel === '2000' && (f.year < 2000 || f.year > 2009)) return false;
+      if (yearSel === '1990' && (f.year < 1990 || f.year > 1999)) return false;
+      if (yearSel === '1980' && f.year >= 1990) return false;
+    }
+
+    if (duration) {
+      if (duration === 'short' && f.duration > 40) return false;
+      if (duration === 'medium' && (f.duration < 40 || f.duration > 90)) return false;
+      if (duration === 'long' && (f.duration < 90 || f.duration > 150)) return false;
+      if (duration === 'epic' && f.duration < 150) return false;
+    }
+
+    if (ad && !f.ad) return false;
+    if (cc && !f.cc) return false;
+    if (libras && !f.libras) return false;
+
+    return true;
+  });
+
+  // sort
+  const sort = document.getElementById('sort').value;
+  if (sort === 'rating') out.sort((a,b)=> b.rating - a.rating);
+  if (sort === 'new') out.sort((a,b)=> b.year - a.year);
+  if (sort === 'duration') out.sort((a,b)=> b.duration - a.duration);
+  // default popular: rating * some factor
+  if (sort === 'popular') out.sort((a,b)=> (b.rating) - (a.rating));
+
+  renderGrid(out);
+}
+
+/* ---------- Reset filters ---------- */
+function resetFilters(){
+  document.getElementById('searchInput').value = '';
+  document.getElementById('genre').value = '';
+  document.getElementById('year').value = '';
+  document.getElementById('duration').value = '';
+  document.getElementById('ad').checked = false;
+  document.getElementById('cc').checked = false;
+  document.getElementById('libras').checked = false;
+  document.getElementById('country').value = '';
+  document.getElementById('age').value = '';
+  document.getElementById('sort').value = 'popular';
+  applyFilters();
+}
+
+/* ---------- Modal / details ---------- */
+function abrirDetalhes(e,id){
+  if (e && e.stopPropagation) e.stopPropagation();
+  const f = films.find(x=> x.id === id);
+  if (!f) return;
+  document.getElementById('modalPoster').style.backgroundImage = `url('${f.poster}')`;
+  document.getElementById('modalTitle').innerText = f.title;
+  document.getElementById('modalTags').innerText = `${f.genre} • ${f.country}`;
+  document.getElementById('modalDesc').innerText = f.desc;
+  document.getElementById('modalDuration').innerText = f.duration + ' min';
+  document.getElementById('modalYear').innerText = f.year;
+  document.getElementById('modalAge').innerText = 'Class.: ' + f.age;
+  document.getElementById('modalDetails').style.display = 'block';
+  document.getElementById('modalDetails').setAttribute('aria-hidden','false');
+  speak('Abrindo detalhes de ' + f.title);
+}
+
+function closeModal(){
+  document.getElementById('modalDetails').style.display = 'none';
+  document.getElementById('modalDetails').setAttribute('aria-hidden','true');
+}
+
+/* exemplo play - apenas para demo */
+function playDemo(){ speak('Iniciando reprodução de exemplo'); }
+
+/* ouvir detalhes via TTS */
+function speakDetails(){
+  const title = document.getElementById('modalTitle').innerText;
+  const desc = document.getElementById('modalDesc').innerText;
+  speak(title + '. ' + desc);
+}
+
+/* ---------- Voice search ---------- */
+let recognizer = null;
+let recogActive = false;
+
+function startVoiceSearch(){
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  if (!SpeechRec) { speak('Seu navegador não suporta reconhecimento de voz.'); return; }
+  if (recogActive) return;
+  try { recognizer = new SpeechRec(); } catch(e){ recognizer = null; }
+  if (!recognizer) { speak('Não foi possível iniciar microfone.'); return; }
+
+  recognizer.lang = 'pt-BR';
+  recognizer.interimResults = false;
+  recognizer.maxAlternatives = 1;
+  recogActive = true;
+  document.getElementById('escutando').style.display = 'block';
+  speak('Diga o que deseja buscar. Exemplo: filmes de comédia ou Vingadores.', { onend: ()=> {
+      try { recognizer.start(); } catch(e){ console.warn(e); }
+  }});
+
+  let heard = false;
+  recognizer.onresult = function(evt){
+    heard = true;
+    const t = (evt.results && evt.results[0] && evt.results[0][0].transcript) ? evt.results[0][0].transcript.toLowerCase() : '';
+    document.getElementById('escutando').style.display = 'none';
+    recogActive = false;
+    document.getElementById('searchInput').value = t;
+    // if contains some keywords, map to filters
+    if (t.includes('comédia') || t.includes('comedia')) document.getElementById('genre').value = 'comédia';
+    if (t.includes('terror')) document.getElementById('genre').value = 'terror';
+    if (t.includes('drama')) document.getElementById('genre').value = 'drama';
+    if (t.includes('brasileiro') || t.includes('brasil')) document.getElementById('country').value = 'Brasil';
+    if (t.match(/\b\d{4}\b/)) {
+      const y = t.match(/\b\d{4}\b/)[0];
+      document.getElementById('year').value = y >= 2023 ? '2023' : (y>=2018? '2018' : (y>=2010? '2010' : (y>=2000? '2000': '1990')));
+    }
+    applyFilters();
+    speak('Resultados atualizados para: ' + t);
+  };
+
+  recognizer.onerror = function(err){
+    recogActive = false;
+    document.getElementById('escutando').style.display = 'none';
+    speak('Não entendi. Tente novamente usando o botão ou digite.');
+  };
+
+  recognizer.onend = function(){
+    recogActive = false;
+    document.getElementById('escutando').style.display = 'none';
+    if (!heard) speak('Não foi detectada fala. Tente novamente.');
+  };
+
+  // safety stop
+  setTimeout(()=> { try{ if (recogActive && recognizer) recognizer.stop(); }catch(e){} }, 9000);
+}
+
+/* ---------- Profile integration (localStorage) ---------- */
+function loadProfileIntoUI(){
+  const p = JSON.parse(localStorage.getItem('perfilConnectUs') || '{}');
+  if (p && Object.keys(p).length) {
+    // quick mini profile
+    document.getElementById('miniNome').innerText = 'Nome: ' + (p.nome || '—');
+    document.getElementById('miniInter').innerText = 'Interesse: ' + (p.interesse || '—');
+    // optionally apply recommendation filter automatically
+    if (p.interesse) {
+      // set genre if interest matches known genres
+      const interest = (p.interesse || '').toLowerCase();
+      const known = ['ação','aventura','comédia','drama','romance','terror','suspense','animação','documentário','ficção científica','ficcao científica','ficcao'];
+      const found = known.find(k => interest.includes(k));
+      if (found) {
+        document.getElementById('genre').value = found;
+      }
+    }
+  }
+}
+
+/* open profile modal */
+function abrirPerfilModal(){
+  loadProfileIntoUI();
+  const el = document.getElementById('perfilModal');
+  el.style.display = 'block';
+}
+
+/* close perfil */
+function closePerfilModal(){ document.getElementById('perfilModal').style.display='none'; }
+function editarPerfil(){ speak('Abrindo tela de edição.'); setTimeout(()=> window.location.href='test.html',500); }
+
+/* ---------- Helpers ---------- */
+function scrollToGrid(){ document.getElementById('resultsGrid').scrollIntoView({behavior:'smooth'}); }
+
+/* inicialização */
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderGrid(films);
+  loadProfileIntoUI();
+  // apply filters when user types enter
+  document.getElementById('searchInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') applyFilters(); });
+});
+</script>
+
+</body>
+</html>
