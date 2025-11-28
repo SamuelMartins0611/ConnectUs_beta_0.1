@@ -325,7 +325,7 @@ function login(){
 
   if(user === data.nome && pass === data.senha){
     speak("Login realizado com sucesso. Bem vindo!");
-    setTimeout(()=> window.location.href = "menuconteudos.html", 800);
+    setTimeout(()=> window.location.href = "menuConteudos.html", 800);
   } else {
     msg.innerText = "Usuário ou senha incorretos.";
     speak("Usuário ou senha incorretos.");
@@ -492,3 +492,4 @@ function executarOpcao(v){
 
 </body>
 </html>
+
