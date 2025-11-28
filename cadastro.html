@@ -196,7 +196,7 @@
     /*senha css*/
     .senha-wrapper {
       position: relative;
-      width: 98%;
+      width: 97%;
     }
 
     .toggleSenhaBtn {
@@ -630,6 +630,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   toggleDropdownOption('desativarVoz', '🔇 Desativar Voz');
   document.documentElement.style.setProperty('--text-scale', textScale);
 });
+
+function toggleSenha() {
+    const input = document.getElementById("senhaUsuario");
+    const btn = document.querySelector(".toggleSenhaBtn");
+
+    if (input.type === "password") {
+        input.type = "text";      // mostra a senha
+        btn.textContent = "🙈";   // muda o ícone
+    } else {
+        input.type = "password";  // oculta
+        btn.textContent = "👁️";  // volta o ícone
+    }
+}
+
 </script>
 
 
