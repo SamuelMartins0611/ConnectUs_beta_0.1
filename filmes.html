@@ -47,17 +47,7 @@
   .profile-box{ position:fixed; right:12px; top:12px; z-index:1200; }
   .profile-btn{ background:var(--btn); border:none; padding:10px 12px; border-radius:10px; cursor:pointer; color:var(--fg); }
   /* responsive */
- @media (max-width:720px){
-    .search-box input[type="search"]{
-        width:160px;
-    }
-
-    .poster{
-        height:220px;
-    }
-    #acessDropdown {
-      width: 16%;
-      }
+ 
  /* --- Checkboxes bonitos (estilo ConnectUs moderno) --- */
 
 .custom-check {
@@ -124,17 +114,15 @@
   left: 10px;
   top: 10px;
   z-index: 1500;
-
   background: var(--card);
   color: var(--fg);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 8px;
   padding: 6px 8px;
-
+  width: 3%;
   font-size: 14px;
   cursor: pointer;
   outline: none;
-
   transition: 0.2s;
 }
 
@@ -146,6 +134,7 @@
   font-size: 15px;
   padding: 4px;
   cursor: pointer;
+  width: 100%;
 }
 
 /* Ao abrir */
@@ -160,7 +149,25 @@
   color: var(--fg);
   padding: 6px;
 }
-
+@media (max-width:720px){
+    .search-box input[type="search"]{
+        width:160px;
+    }
+    header h1{ 
+      display: flex;
+       flex-direction: column;
+         font-size:18px; 
+      }
+    .poster{
+        height:220px;
+    }
+    #acessDropdown {
+      width: 12%;
+      };
+    #acessDropdown select{
+      width: 10%;
+    }
+  }
 </style>
 </head>
 <body>
@@ -170,7 +177,7 @@
 </header>
     <div id="acessDropdown">
   <select id="menuAcessibilidade" onchange="executarOpcao(this.value)">
-        <option value="">⚙ Opções</option>
+        <option value="">⚙</option>
         <option value="zoomIn">Aumentar Zoom</option>
         <option value="zoomOut">Diminuir Zoom</option>
         <option value="modoCalmo">Modo Calmo</option>
@@ -727,6 +734,7 @@ function executarOpcao(v) {
     };
 
     if (map[v]) map[v]();
+      document.getElementById('menuAcessibilidade').value = '';
 }
 
 /* Funções do menu */
