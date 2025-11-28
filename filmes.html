@@ -22,7 +22,7 @@
   .filters{ margin-top:14px; display:grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap:12px; align-items:start; }
   .filter-card{ background:var(--card); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,.03); font-size:14px; }
   .filter-card label{ display:block; margin-bottom:6px; font-weight:600; }
-  .filter-card select, .filter-card input[type="checkbox"], .filter-card input[type="text"]{ width:100%; padding:8px 10px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,.06); color:var(--fg); }
+  .filter-card select, .filter-card input[type="text"]{ width:100%; padding:8px 10px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,.06); color:var(--fg); }
   .filter-actions{ margin-top:12px; display:flex; gap:8px; }
   .btn-primary{ background:var(--accent); color:#fff; border:none; padding:10px 12px; border-radius:10px; cursor:pointer; }
   .btn-secondary{ background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--fg); padding:10px 12px; border-radius:10px; cursor:pointer; }
@@ -48,6 +48,109 @@
   .profile-btn{ background:var(--btn); border:none; padding:10px 12px; border-radius:10px; cursor:pointer; color:var(--fg); }
   /* responsive */
   @media (max-width:720px){ .search-box input[type="search"]{ width:160px; } .poster{ height:220px; } }
+ /* --- Checkboxes bonitos (estilo ConnectUs moderno) --- */
+
+.custom-check {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 14px;
+}
+
+.custom-check:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* escondemos o checkbox original */
+.custom-check input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.25s;
+}
+
+/* quando marcado */
+.custom-check input:checked + .checkmark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.checkmark::after {
+  content: "✔";
+  color: white;
+  font-size: 14px;
+  opacity: 0;
+  transition: 0.25s;
+}
+
+/* show checkmark */
+.custom-check input:checked + .checkmark::after {
+  opacity: 1;
+}
+
+/* --- Dropdown de Acessibilidade (Cinema) --- */
+
+#acessDropdown {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  z-index: 1500;
+
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 6px 8px;
+
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+
+  transition: 0.2s;
+}
+
+/* Aparência do select */
+#acessDropdown select {
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  font-size: 15px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* Ao abrir */
+#acessDropdown select:focus {
+  outline: none;
+  border: none;
+}
+
+/* Opções internas */
+#acessDropdown option {
+  background: var(--card);
+  color: var(--fg);
+  padding: 6px;
+}
+
 </style>
 </head>
 <body>
@@ -55,6 +158,20 @@
 <header>
   <h1 onmouseover="safeRead('Cinema — Explorar filmes')">ConnectUs — Cinema</h1>
 </header>
+    <div id="acessDropdown">
+  <select id="menuAcessibilidade" onchange="executarOpcao(this.value)">
+        <option value="">⚙ Opções</option>
+        <option value="zoomIn">Aumentar Zoom</option>
+        <option value="zoomOut">Diminuir Zoom</option>
+        <option value="modoCalmo">Modo Calmo</option>
+        <option value="pauseAudio">Pausar Leitura</option>
+        <option value="resumeAudio">Retomar Leitura</option>
+        <option value="toggleTheme">Tema Claro/Escuro</option>
+        <option value="desativarVoz">Desativar Voz</option>
+        <option value="ativarVoz">Ativar Voz</option>
+        <option value="voltarHome">🏠 Início</option>
+  </select>
+</div>
 
 <!-- profile quick -->
 <div class="profile-box" aria-hidden="false">
@@ -142,13 +259,34 @@
       </select>
     </div>
 
-     <div class="filter-card">
-      <label>Acessibilidade</label>
-      <div><label><input type="checkbox" id="ad" /> Audiodescrição</label></div>
-      <div><label><input type="checkbox" id="cc" /> Legendas (CC)</label></div>
-      <div><label><input type="checkbox" id="libras" /> Libras</label></div>
-      <div style="margin-top:8px;"><label><input type="checkbox" id="highContrast" /> Contraste aprimorado</label></div>
-    </div>
+      <div class="filter-card">
+        <label>Acessibilidade</label>
+
+        <label class="custom-check">
+          <input type="checkbox" id="ad">
+          <span class="checkmark"></span>
+          ♿ Audiodescrição
+        </label>
+
+        <label class="custom-check">
+          <input type="checkbox" id="cc">
+          <span class="checkmark"></span>
+          💬 Legendas (CC)
+        </label>
+
+        <label class="custom-check">
+          <input type="checkbox" id="libras">
+          <span class="checkmark"></span>
+          🤟 Libras
+        </label>
+
+        <label class="custom-check">
+          <input type="checkbox" id="highContrast">
+          <span class="checkmark"></span>
+          🎨 Contraste aprimorado
+        </label>
+      </div>
+
   </div>
 
   <div id="escutando" role="status" aria-live="polite">🎧 Ouvindo você…</div>
@@ -163,28 +301,45 @@
 
 <!-- modal details -->
 <div id="modalDetails" aria-hidden="true">
-  <div id="modalInner" role="dialog" aria-label="Detalhes do filme">
+  <div id="modalInner" role="dialog">
+
     <button class="icon-btn" onclick="closeModal()" style="float:right">✖</button>
+
     <div class="row">
-      <div class="col" id="modalPoster" style="min-width:260px; height:360px; background-size:cover; border-radius:8px;"></div>
+      <div class="col" id="modalPoster"></div>
+
       <div class="col">
         <h2 id="modalTitle">Título</h2>
         <p id="modalTags" class="small"></p>
         <p id="modalDesc"></p>
+
         <div style="margin-top:12px;">
           <span class="badge" id="modalDuration"></span>
           <span class="badge" id="modalYear"></span>
           <span class="badge" id="modalAge"></span>
         </div>
 
+        <!-- AQUI entram os novos blocos -->
+        <div id="modalAcess" style="margin-top:14px;"></div>
+
+        <div id="modalAssistir" style="margin-top:14px;"></div>
+
+        <div style="margin-top:14px;">
+          <strong>Direção:</strong> <span id="modalDiretor"></span><br>
+          <strong>Elenco:</strong> <span id="modalElenco"></span>
+        </div>
+
+        <!-- Botões originais -->
         <div style="margin-top:14px;">
           <button class="btn-primary" onclick="playDemo()">▶ Assistir (exemplo)</button>
           <button class="btn-secondary" onclick="speakDetails()">🔊 Ouvir detalhes</button>
         </div>
+
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- perfil modal (simples) -->
 <div id="perfilModal" style="display:none; position:fixed; right:12px; top:60px; z-index:1500; background:var(--card); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,.04);">
@@ -213,16 +368,49 @@
 const POSTER_PLACEHOLDER = '/mnt/data/fa144841-e950-433c-880c-321b334cc53d.png';
 
 const films = [
-  { id:1, title:'Vingadores: Ultimato', genre:'ação', year:2019, duration:181, country:'EUA', age:'14', rating:8.4, ad:true, cc:true, libras:false, desc:'Super-heróis unem forças para reverter o estalo.' , poster:"img/utlimato.jpg"},
+  {
+  id: 1,
+  title: 'Vingadores: Ultimato',
+  genre: 'ação',
+  year: 2019,
+  duration: 181,
+  country: 'EUA',
+  age: '14',
+  rating: 8.4,
+
+  desc: 'Super-heróis unem forças para reverter o estalo.',
+  poster: "img/utlimato.jpg",
+
+  // -------- NOVO --------
+  diretor: "Anthony Russo, Joe Russo",
+  elenco: [
+    "Robert Downey Jr.",
+    "Chris Evans",
+    "Scarlett Johansson",
+    "Chris Hemsworth"
+  ],
+
+  acessibilidade: {
+    ad: true,
+    cc: true,
+    libras: false
+  },
+
+  assistir: [
+    { nome: "Disney+", url: "https://www.disneyplus.com" }
+  ],
+
+  trailer: "https://www.youtube.com/watch?v=TcMBFSGVi1c"
+},
   { id:2, title:'O Poderoso Chefão', genre:'drama', year:1972, duration:175, country:'EUA', age:'16', rating:9.2, ad:false, cc:true, libras:false, desc:'Família mafiosa e poder.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_bestv2/oJagOzBu9Rdd9BrciseCm3U3MCU.jpg"},
   { id:3, title:'Parasita', genre:'suspense', year:2019, duration:132, country:'Coreia', age:'16', rating:8.6, ad:false, cc:true, libras:false, desc:'Crítica social e tensão crescente.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_bestv2/igw938inb6Fy0YVcwIyxQ7Lu5FO.jpg"},
-  { id:4, title:'Cidade de Deus', genre:'drama', year:2002, duration:130, country:'Brasil', age:'16', rating:8.6, ad:false, cc:true, libras:false, desc:'História da favela e ascensão do crime.' , poster:POSTER_PLACEHOLDER},
-  { id:5, title:'Toy Story', genre:'animação', year:1995, duration:81, country:'EUA', age:'L', rating:8.3, ad:false, cc:true, libras:false, desc:'Brinquedos que ganham vida.' , poster:POSTER_PLACEHOLDER},
-  { id:6, title:'Coringa', genre:'drama', year:2019, duration:122, country:'EUA', age:'18', rating:8.4, ad:false, cc:false, libras:false, desc:'Origem do vilão e crítica à sociedade.' , poster:POSTER_PLACEHOLDER},
-  { id:7, title:'Intocáveis', genre:'comédia', year:2011, duration:112, country:'Europa', age:'14', rating:8.5, ad:true, cc:true, libras:false, desc:'Amizade entre homem rico e cuidador.' , poster:POSTER_PLACEHOLDER},
-  { id:8, title:'1917', genre:'guerra', year:2019, duration:119, country:'Europa', age:'16', rating:8.3, ad:false, cc:true, libras:false, desc:'Missão em tempo real durante a guerra.' , poster:POSTER_PLACEHOLDER},
-  { id:9, title:'A Origem', genre:'ficção científica', year:2010, duration:148, country:'EUA', age:'14', rating:8.8, ad:false, cc:true, libras:false, desc:'Sonhos dentro de sonhos.' , poster:POSTER_PLACEHOLDER},
-  { id:10, title:'Bacurau', genre:'drama', year:2019, duration:131, country:'Brasil', age:'16', rating:7.6, ad:false, cc:true, libras:false, desc:'Vila no sertão reage a ameaças externas.' , poster:POSTER_PLACEHOLDER}
+  { id:4, title:'Cidade de Deus', genre:'drama', year:2002, duration:130, country:'Brasil', age:'16', rating:8.6, ad:false, cc:true, libras:false, desc:'História da favela e ascensão do crime.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/gfnXixcGC060QcG6JPxN6AMdVsq.jpg"},
+  { id:5, title:'Toy Story', genre:'animação', year:1995, duration:81, country:'EUA', age:'L', rating:8.3, ad:false, cc:true, libras:false, desc:'Brinquedos que ganham vida.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/6AafgfifXkFS4g2xGJZIwsPQK6P.jpg"},
+  { id:6, title:'Coringa', genre:'drama', year:2019, duration:122, country:'EUA', age:'18', rating:8.4, ad:false, cc:false, libras:false, desc:'Origem do vilão e crítica à sociedade.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/xLxgVxFWvb9hhUyCDDXxRPPnFck.jpg"},
+  { id:7, title:'Intocáveis', genre:'comédia', year:2011, duration:112, country:'Europa', age:'14', rating:8.5, ad:true, cc:true, libras:false, desc:'Amizade entre homem rico e cuidador.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/sHcqCSjDAdQI5g0SFJOZGmLGr9Z.jpg"},
+  { id:8, title:'1917', genre:'guerra', year:2019, duration:119, country:'Europa', age:'16', rating:8.3, ad:false, cc:true, libras:false, desc:'Missão em tempo real durante a guerra.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/m6VVgmwNdOWvLo8nlheLPQU5wr7.jpg"},
+  { id:9, title:'A Origem', genre:'ficção científica', year:2010, duration:148, country:'EUA', age:'14', rating:8.8, ad:false, cc:true, libras:false, desc:'Sonhos dentro de sonhos.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/9e3Dz7aCANy5aRUQF745IlNloJ1.jpg"},
+  { id:10, title:'Bacurau', genre:'drama', year:2019, duration:131, country:'Brasil', age:'16', rating:7.6, ad:false, cc:true, libras:false, desc:'Vila no sertão reage a ameaças externas.' , poster:"https://media.themoviedb.org/t/p/w300_and_h450_face/qvmLAVqNB5TbGUa9QqQvXiFC4UR.jpg"}
 ];
 
 /* ---------- Utilities ---------- */
@@ -346,10 +534,13 @@ function resetFilters(){
 }
 
 /* ---------- Modal / details ---------- */
-function abrirDetalhes(e,id){
+function abrirDetalhes(e, id) {
   if (e && e.stopPropagation) e.stopPropagation();
-  const f = films.find(x=> x.id === id);
+
+  const f = films.find(x => x.id === id);
   if (!f) return;
+
+  // Dados principais
   document.getElementById('modalPoster').style.backgroundImage = `url('${f.poster}')`;
   document.getElementById('modalTitle').innerText = f.title;
   document.getElementById('modalTags').innerText = `${f.genre} • ${f.country}`;
@@ -357,18 +548,44 @@ function abrirDetalhes(e,id){
   document.getElementById('modalDuration').innerText = f.duration + ' min';
   document.getElementById('modalYear').innerText = f.year;
   document.getElementById('modalAge').innerText = 'Class.: ' + f.age;
+
+  /* ---------------------------------------
+     NOVOS CAMPOS (Diretor, Elenco, Acessibilidade, Onde Assistir, Trailer)
+     --------------------------------------- */
+
+  // Acessibilidade
+  const a = f.acessibilidade || {};
+  document.getElementById("modalAcess").innerHTML = `
+    <strong>Acessibilidade:</strong><br>
+    ${a.ad ? "♿ Audiodescrição<br>" : ""}
+    ${a.cc ? "💬 Legendas (CC)<br>" : ""}
+    ${a.libras ? "🤟 Libras<br>" : ""}
+  `;
+
+  // Onde assistir
+  document.getElementById("modalAssistir").innerHTML =
+    `<strong>Onde Assistir:</strong><br>` +
+    (f.assistir || []).map(a =>
+      `<a class="stream-btn" href="${a.url}" target="_blank">▶ ${a.nome}</a><br>`
+    ).join("");
+
+  // Diretor
+  document.getElementById("modalDiretor").innerText = f.diretor || "—";
+
+  // Elenco
+  document.getElementById("modalElenco").innerText =
+    f.elenco ? f.elenco.join(", ") : "—";
+
+  // Trailer
+  window.trailerAtual = f.trailer || null;
+
+  // Mostrar modal
   document.getElementById('modalDetails').style.display = 'block';
-  document.getElementById('modalDetails').setAttribute('aria-hidden','false');
+  document.getElementById('modalDetails').setAttribute('aria-hidden', 'false');
+
+  // TTS ORIGINAL MANTIDO
   speak('Abrindo detalhes de ' + f.title);
 }
-
-function closeModal(){
-  document.getElementById('modalDetails').style.display = 'none';
-  document.getElementById('modalDetails').setAttribute('aria-hidden','true');
-}
-
-/* exemplo play - apenas para demo */
-function playDemo(){ speak('Iniciando reprodução de exemplo'); }
 
 /* ouvir detalhes via TTS */
 function speakDetails(){
@@ -474,8 +691,107 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // apply filters when user types enter
   document.getElementById('searchInput').addEventListener('keydown', (e)=>{ if (e.key === 'Enter') applyFilters(); });
 });
+
+function closeModal() {
+  document.getElementById('modalDetails').style.display = 'none';
+  document.getElementById('modalDetails').setAttribute('aria-hidden', 'true');
+  
+  // cancelar fala se estiver ativa
+  try { speechSynthesis.cancel(); } catch(e){}
+}
+
+//dropdown config dele 
+function executarOpcao(v) {
+    if (!v) return;
+
+    const map = {
+        zoomIn,
+        zoomOut,
+        modoCalmo,
+        pauseAudio,
+        resumeAudio,
+        toggleTheme,
+        desativarVoz,
+        ativarVoz,
+        voltarHome
+    };
+
+    if (map[v]) map[v]();
+}
+
+/* Funções do menu */
+function zoomIn(){
+    document.body.style.zoom = (parseFloat(document.body.style.zoom) || 1) + 0.1;
+}
+
+function zoomOut(){
+    document.body.style.zoom = (parseFloat(document.body.style.zoom) || 1) - 0.1;
+}
+
+function modoCalmo(){
+    speak("Modo calmo ativado");
+    document.body.style.filter = "blur(1px) brightness(0.9)";
+}
+
+function pauseAudio(){
+    window.speechSynthesis.cancel();
+}
+
+function resumeAudio(){
+    speak("Retomando leitura");
+}
+
+function toggleTheme(){
+    document.body.classList.toggle("temaClaro");
+}
+
+
+function voltarHome(){
+    window.location.href = "menuConteudos.html";
+}
+
+
+/* --- Controle global de voz (corrige o desativar/ativar) --- */
+
+// flag global (padrão ligado)
+window.vozAtiva = (typeof window.vozAtiva !== 'undefined') ? window.vozAtiva : true;
+
+/* substitua a sua função speak pelo bloco abaixo (verifica vozAtiva) */
+function speak(text, opts = {}) {
+  // não falar se a voz estiver desativada
+  if (!window.vozAtiva) return;
+  try { window.speechSynthesis.cancel(); } catch(e){}
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = opts.lang || 'pt-BR';
+  if (opts.rate) u.rate = opts.rate;
+  if (opts.onend) u.onend = opts.onend;
+  try { speechSynthesis.speak(u); } catch(e){}
+}
+
+/* safeRead já chama speak, mas garante que só tenta se voz ativa */
+function safeRead(text){
+  if (!text) return;
+  if (!window.vozAtiva) return;
+  speak(text);
+}
+
+/* funções para ativar / desativar a fala — use essas nas opções do dropdown */
+function desativarVoz(){
+  // cancela fala ativa e desliga
+  try { window.speechSynthesis.cancel(); } catch(e){}
+  window.vozAtiva = false;
+  // feedback visual/sonoro (apenas visual, pois voz está off)
+  console.log('Voz desativada');
+}
+
+function ativarVoz(){
+  window.vozAtiva = true;
+  // dá um pequeno feedback por voz
+  speak('Voz reativada.');
+  console.log('Voz ativada');
+}
+
 </script>
 
 </body>
 </html>
-

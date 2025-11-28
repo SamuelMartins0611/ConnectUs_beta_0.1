@@ -245,6 +245,12 @@ a:hover{
 
 <audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
+<div vw class="enabled" style="z-index:1300">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script> try { new window.VLibras.Widget('https://vlibras.gov.br/app'); } catch(e) { console.warn('VLibras init failed', e); } </script>
 
 <script>
 /* ================================
@@ -319,7 +325,7 @@ function login(){
 
   if(user === data.nome && pass === data.senha){
     speak("Login realizado com sucesso. Bem vindo!");
-    setTimeout(()=> window.location.href = "menuConteudos.html", 800);
+    setTimeout(()=> window.location.href = "menuconteudos.html", 800);
   } else {
     msg.innerText = "Usuário ou senha incorretos.";
     speak("Usuário ou senha incorretos.");
@@ -486,5 +492,3 @@ function executarOpcao(v){
 
 </body>
 </html>
-
-

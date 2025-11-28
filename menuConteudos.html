@@ -148,7 +148,7 @@
   <button class="tool-btn" onclick="startVoiceQuestion()" title="Pergunta por voz" id="btnStartVoice">🎙️</button>
   <button class="tool-btn" onclick="speak('Lendo recomendações')" title="Ler tudo">📣</button>
   <!-- PERFIL -->
-  <button class="tool-btn" onclick="abrirPerfil()" title="Meu Perfil" id="btnPerfil">👤</button>
+  <button class="tool-btn" onclick="abrirPerfil()" title="Meu Perfil" id="btnPerfil">👤 perfil </button>
 </div>
 
 <header>
@@ -390,7 +390,7 @@ function selectAndOpen(key){
 /* ====== Navigation helpers ====== */
 function irParaHome(){
   speak('Voltando para a tela inicial.');
-  setTimeout(()=> window.location.href = 'test.html', 700);
+  setTimeout(()=> window.location.href = 'cadastro.html', 700);
 }
 
 /* ====== PERFIL: abrir / fechar / editar ====== */
@@ -424,7 +424,7 @@ function fecharPerfil(){
 function editarPerfil(){
   // simples redirecionamento para a tela inicial para editar (ou você pode abrir um formulário inline)
   speak('Abrindo a tela de edição de perfil.');
-  setTimeout(()=> window.location.href = 'index.html', 600);
+  setTimeout(()=> window.location.href = 'configuracao.html', 600);
 }
 
 /* ====== keyboard global: ESC trata modal e reconhecimento ====== */

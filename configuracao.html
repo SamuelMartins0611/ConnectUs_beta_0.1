@@ -70,22 +70,57 @@ body {
   z-index:999; 
 }
 
-/* ===========================================
-   CABEÇALHO
-=========================================== */
+/* HEADER AJUSTADO */
 header {
   background:#111;
   padding:14px 18px;
-  text-align:center;
   border-bottom:2px solid rgba(255,255,255,.05);
   position:sticky;
   top:0;
   z-index:120;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
+
+/* força o título a ficar centralizado visualmente */
 header h1 {
+  flex:1;
+  text-align:center;
   margin:0;
   font-size:20px;
+}
+
+/* BOTÃO SAIR À ESQUERDA */
+#btnHeaderSair {
+  padding:8px 16px;
+  background:#d9534f;
+  border:none;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:700;
   color:#fff;
+  cursor:pointer;
+  transition:0.15s;
+}
+
+#btnHeaderSair:hover {
+  background:#e56762;
+  transform:translateY(-2px);
+}
+/* tema claro */
+.temaClaro #btnHeaderSair {
+  background:#e74c3c;
+}
+.temaClaro #btnHeaderSair:hover {
+  background:#ff6b61;
+}
+
+.temaClaro .top-acessibilidade select {
+  background:#ddd;
+  color:#111;
+  border:1px solid #bbb;
 }
 
 /* Wrapper */
@@ -305,23 +340,26 @@ select:focus {
 </head>
 <body>
 
-<!-- DROPDOWN DE ACESSIBILIDADE (ADIÇÃO) -->
-<div class="top-acessibilidade">
-  <select id="menuAcessibilidade" onchange="executarOpcao(this.value)" aria-label="Opções de acessibilidade">
-      <option value="" id="acessIcon" disabled selected hidden>⚙</option>
-      <option value="zoomIn">Aumentar Zoom</option>
-      <option value="zoomOut">Diminuir Zoom</option>
-      <option value="modoCalmo">Modo Calmo</option>
-      <option value="pauseAudio">Pausar Leitura</option>
-      <option value="resumeAudio">Retomar Leitura</option>
-      <option value="toggleTheme">Tema Claro/Escuro</option>
-      <option value="desativarVoz">Desativar Voz</option>
-  </select>
-</div>
-
-
 <header>
-  <h1 onmouseover="lerTexto('Configurações do perfil')">ConnectUs — Configurações</h1>
+  <button id="btnHeaderSair">Sair</button>
+
+  <h1 onmouseover="lerTexto('Configurações do perfil')">
+      ConnectUs — Configurações
+  </h1>
+
+  <div class="top-acessibilidade">
+      <select id="menuAcessibilidade" onchange="executarOpcao(this.value)">
+          <option value="">⚙</option>
+          <option value="zoomIn">Aumentar Zoom</option>
+          <option value="zoomOut">Diminuir Zoom</option>
+          <option value="modoCalmo">Modo Calmo</option>
+          <option value="pauseAudio">Pausar Leitura</option>
+          <option value="resumeAudio">Retomar Leitura</option>
+          <option value="toggleTheme">Tema Claro/Escuro</option>
+          <option value="desativarVoz">Desativar Voz</option>
+          <option value="ativarVoz">Ativar Voz</option>
+      </select>
+  </div>
 </header>
 
 <main class="wrap">
@@ -717,6 +755,137 @@ const inputs = document.querySelectorAll('#cfg_nome,#cfg_idade,#cfg_def,#cfg_nav
 inputs.forEach(i=>{
   i.addEventListener('mouseover', ()=> { if (i.placeholder) lerTexto(i.placeholder); else lerTexto(i.previousElementSibling ? i.previousElementSibling.innerText : 'Campo'); });
 });
+
+/* ======================
+   DROPDOWN DE ACESSIBILIDADE
+   ====================== */
+
+// zoom visual
+function zoomIn(){
+  document.body.style.zoom =
+    (parseFloat(document.body.style.zoom || 1) + 0.1).toFixed(2);
+}
+
+function zoomOut(){
+  let z = parseFloat(document.body.style.zoom || 1) - 0.1;
+  if (z < 0.6) z = 0.6;
+  document.body.style.zoom = z.toFixed(2);
+}
+
+// tema
+function toggleTheme(){
+  document.body.classList.toggle('temaClaro');
+  lerTexto(
+    document.body.classList.contains('temaClaro')
+      ? 'Tema claro ativado'
+      : 'Tema escuro ativado'
+  );
+}
+
+// modo calmo
+function modoCalmo(){
+  document.body.classList.toggle('modo-calmo');
+  lerTexto('Modo calmo ativado');
+}
+
+/* ======================
+   VOZ — AGORA COM DROPDOWN DINÂMICO
+   ====================== */
+
+// Desativar voz
+function desativarVoz(){
+  vozAtiva = false;
+
+  try { speechSynthesis.cancel(); } catch(e){}
+
+  atualizarDropdownVoz();
+
+  alert("Voz desativada."); // Não usa TTS, porque está desativado
+}
+
+// Ativar voz
+function ativarVoz(){
+  vozAtiva = true;
+
+  try {
+    // desbloqueia engine do Chrome
+    speechSynthesis.cancel();
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance("Voz ativada.");
+      u.lang = "pt-BR";
+      speechSynthesis.speak(u);
+    }, 60);
+  } catch(e){}
+
+  atualizarDropdownVoz();
+}
+
+/*  
+    Atualiza automaticamente o dropdown.
+    - Se voz ativa → mostra "Desativar Voz"
+    - Se voz desativada → mostra "Ativar Voz"
+*/
+function atualizarDropdownVoz(){
+  const sel = document.getElementById("menuAcessibilidade");
+  if (!sel) return;
+
+  // Remove opções antigas
+  sel.querySelectorAll("option[value='ativarVoz'], option[value='desativarVoz']")
+     .forEach(o => o.remove());
+
+  const opt = document.createElement("option");
+
+  if (vozAtiva){
+    opt.value = "desativarVoz";
+    opt.textContent = "Desativar Voz";
+  } else {
+    opt.value = "ativarVoz";
+    opt.textContent = "Ativar Voz";
+  }
+
+  sel.appendChild(opt);
+}
+
+/* Pausar leitura */
+function pauseAudio(){ speechSynthesis.pause(); }
+
+/* Retomar leitura */
+function resumeAudio(){ speechSynthesis.resume(); }
+
+/* seletor */
+function executarOpcao(v){
+  if (!v) return;
+
+  const map = {
+    zoomIn,
+    zoomOut,
+    modoCalmo,
+    pauseAudio,
+    resumeAudio,
+    toggleTheme,
+    desativarVoz,
+    ativarVoz
+  };
+
+  if (map[v]) map[v]();
+
+  // voltar para ⚙
+  setTimeout(()=>{
+    const sel = document.getElementById("menuAcessibilidade");
+    if (sel) sel.value = "";
+  }, 100);
+}
+
+/* Inicializar dropdown correto no carregamento */
+
+
+document.getElementById("btnHeaderSair").addEventListener("click", () => {
+  lerTexto("Voltando para o menu de conteúdos.");
+  setTimeout(() => {
+    window.location.href = "menuConteudos.html";
+  }, 600);
+});
+
 </script>
 
 </body>
