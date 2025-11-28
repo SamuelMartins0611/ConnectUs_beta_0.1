@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>ConnectUs — Conteúdos</title>
 <style>
-  :root { --bg:#000; --fg:#fff; --card:#222; --muted:#777; --accent:#4aa3ff; --btn:#444; }
+  :root {
+  --bg:#000;
+  --fg:#fff;
+  --card:#222;
+  --muted:#aaa;
+  --accent:#4aa3ff;
+  --btn:#333;
+  --shadow: rgba(0,0,0,.35);
+  --border: rgba(255,255,255,.10);
+}
+
   body {
     margin:0; padding:0;
     font-family: Arial, sans-serif;
@@ -16,15 +26,28 @@
   }
 
   /* Tema claro */
-  .temaClaro { --bg:#f2f2f2; --fg:#111; --card:#e8e8e8; --muted:#555; --btn:#ccc; }
   .temaClaro header { border-bottom-color:#bbb; }
+  .temaClaro {
+  --bg:#f2f2f2;
+  --fg:#111;
+  --card:#ffffff;
+  --muted:#444;
+  --btn:#ddd;
+  --shadow: rgba(0,0,0,.15);
+  --border: rgba(0,0,0,.12);
+}
+
 
   /* Header */
   header {
-    background:#111; color:var(--fg);
-    padding:18px 16px; text-align:center;
-    border-bottom:2px solid #444;
-  }
+  background: var(--card);
+  color: var(--fg);
+  padding:18px 16px;
+  text-align:center;
+  border-bottom:2px solid var(--border);
+  transition: background .25s, color .25s;
+}
+
   header h1 { margin:0; font-size:22px; user-select:none; }
 
   /* Acessibilidade box */
@@ -32,14 +55,83 @@
     position: fixed; left:12px; top:12px; z-index:1200;
   }
   .access-box select {
-    padding:10px; border-radius:10px; background:#444; color:#fff; border:none; cursor:pointer;
+    padding:10px;
+    border-radius:10px;
+    background: var(--card);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    cursor:pointer;
     outline:none;
-  }
+    width: 30%;
+    font-size: 20px;
+    box-shadow: 0 4px 10px var(--shadow);
+    transition: background .25s, color .25s, border .25s;
+}
+
 
   /* Toolbar direita */
-  .toolbar {
-    position: fixed; right:12px; top:12px; display:flex; gap:8px; z-index:1200;
+  /* =======================
+     TOOLBAR DROPDOWN
+   ======================= */
+
+.toolbar-dropdown {
+  position: fixed;
+  right: 12px;
+  top: 12px;
+  z-index: 1300;
+}
+
+
+.toolbar-toggle {
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+
+.toolbar-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  background: var(--card);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 10px;
+  width: 180px;
+  box-shadow: 0 4px 18px var(--shadow);
+}
+
+
+.toolbar-menu button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+
+.toolbar-menu button:hover {
+  background: rgba(0, 0, 0, 0.61);
+}
+/* Mobile ajuste */
+@media (max-width: 720px) {
+  .toolbar-dropdown {
+    transform: scale(0.85);
+    right: 6px;
+    top: 6px;
   }
+}
   .tool-btn { background:var(--btn); color:var(--fg); border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:16px;}
   .tool-btn:focus { outline:3px solid rgba(74,163,255,.5); }
 
@@ -58,21 +150,27 @@
   }
 
   .card {
-    background: var(--card);
-    color:var(--fg);
-    border-radius:12px;
-    padding:18px;
-    min-height:140px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    box-shadow: 0 6px 12px rgba(0,0,0,.25);
-    cursor:pointer;
-    border:1px solid rgba(255,255,255,.03);
-  }
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 12px;
+  padding: 18px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 6px 12px var(--shadow);
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+
   .card:focus { outline:3px solid rgba(74,163,255,.5); }
   .card h3 { margin:0 0 8px 0; font-size:20px; }
-  .card p { margin:0 0 12px 0; color:var(--muted); font-size:14px; }
+  .card p {
+  margin: 0 0 12px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
   .card .actions { display:flex; gap:8px; }
 
   .primary {
@@ -127,6 +225,113 @@
     .toolbar { right:8px; top:8px; gap:6px; }
     .tool-btn { width:46px; padding:8px; font-size:14px; }
   }
+  /* =========================================================
+   RESPONSIVIDADE OFICIAL — CONNECTUS (classes CORRETAS)
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+    body {
+        padding: 0;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    /* Ajuste do menu de acessibilidade (access-box) */
+    .access-box {
+        top: 6px;
+        left: -3px;
+        transform: scale(0.8);
+    }
+    .access-box select{
+      width: 35%;
+    }
+    /* Ajuste da toolbar direita */
+    .toolbar {
+        top: 6px;
+        right: 6px;
+        gap: 4px;
+        transform: scale(0.90);
+    }
+
+    .tool-btn {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+
+    /* Área principal */
+    .wrap {
+        padding: 10px;
+        margin-top: 60px; /* Espaço pros menus */
+    }
+
+    /* Título */
+    header h1 {
+        font-size: 18px;
+        padding: 0 8px;
+    }
+
+    /* Grid vira COLUNA */
+    .grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Card */
+    .card {
+        width: 94%;
+        margin: 0 auto;
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .card h3 {
+        font-size: 18px;
+    }
+
+    .card p {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* Botões dentro do card */
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .actions button {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    /* Rodapé */
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
+    .controls button {
+        padding: 10px 12px;
+        font-size: 14px;
+        width: 30%;
+        min-width: 90px;
+    }
+
+    /* VLibras ajustado */
+    [vw] {
+        transform: scale(0.8);
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -134,7 +339,7 @@
 <!-- Access controls left -->
 <div class="access-box">
   <select id="menuAcess" onchange="execAcess(this.value)" aria-label="Opções de acessibilidade">
-    <option value="">⚙</option>
+    <option class="" value="">⚙</option>
     <option value="zoomIn">Aumentar texto</option>
     <option value="zoomOut">Diminuir texto</option>
     <option value="toggleTheme">Tema claro/escuro</option>
@@ -143,12 +348,15 @@
 </div>
 
 <!-- Tools right (inclui ícone de perfil) -->
-<div class="toolbar" role="toolbar" aria-label="Ferramentas">
-  <button class="tool-btn" onclick="testarAudio()" title="Testar áudio">🔊</button>
-  <button class="tool-btn" onclick="startVoiceQuestion()" title="Pergunta por voz" id="btnStartVoice">🎙️</button>
-  <button class="tool-btn" onclick="speak('Lendo recomendações')" title="Ler tudo">📣</button>
-  <!-- PERFIL -->
-  <button class="tool-btn" onclick="abrirPerfil()" title="Meu Perfil" id="btnPerfil">👤 perfil </button>
+<div class="toolbar-dropdown">
+  <button class="toolbar-toggle">☰</button>
+
+  <div class="toolbar-menu">
+    <button onclick="testarAudio()">🔊 Testar áudio</button>
+    <button onclick="startVoiceQuestion()">🎙️ Perguntar por voz</button>
+    <button onclick="speak('Lendo recomendações')">📣 Ler tudo</button>
+    <button onclick="abrirPerfil()">👤 Meu perfil</button>
+  </div>
 </div>
 
 <header>
@@ -448,6 +656,22 @@ document.addEventListener('keyup', (e)=> {
   // allow Enter on focused tool buttons (space/enter)
   if ((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('tool-btn')) {
     document.activeElement.click();
+  }
+});
+
+// Dropdown toolbar
+const toggleBtn = document.querySelector('.toolbar-toggle');
+const menu = document.querySelector('.toolbar-menu');
+
+toggleBtn.addEventListener('click', () => {
+  const open = menu.style.display === 'block';
+  menu.style.display = open ? 'none' : 'block';
+});
+
+// Fechar ao clicar fora
+document.addEventListener('click', (e) => {
+  if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+    menu.style.display = 'none';
   }
 });
 </script>
