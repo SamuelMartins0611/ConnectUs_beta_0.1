@@ -6,63 +6,76 @@
 <title>ConnectUs</title>
 
 <style>
-    
     /* ====== TELA DE CARREGAMENTO ====== */
     #loading-screen {
-       
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: black; /* cor do fundo */
+        width: 100vw;
+        height: 100vh;
+        background: #000;
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        z-index: 9999;
-        transition: opacity 0.8s ease;
+        z-index: 999999; /* muito acima */
+        opacity: 1;
+        transition: opacity 0.5s ease;
     }
 
-    /* Loader circular */
     .loader-logo {
-        width: 120px;
-        height: 120px;
+        width: 20vmin;
+        height: 20vmin;
+        max-width: 150px;
+        max-height: 150px;
+
         border-radius: 50%;
-        border: 6px solid #007bff; /* azul ConnectUs (pode trocar) */
+        border: 6px solid #007bff;
         border-top-color: transparent;
         animation: spin 1s linear infinite;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
-    /* Texto abaixo do loader */
     .loading-text {
-        font-size: 20px;
+        font-size: 5vmin;
+        font-size: clamp(14px, 5vmin, 22px);
         color: #007bff;
         font-weight: bold;
         font-family: Arial, sans-serif;
     }
 
-    /* Animação de rotação */
     @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
+        to { transform: rotate(360deg); }
     }
 </style>
-
 </head>
+
 <body>
 
-<!-- ====== TELA DE CARREGAMENTO ====== -->
+<!-- ====== LOADING ====== -->
 <div id="loading-screen">
     <div class="loader-logo"></div>
     <div class="loading-text">Carregando ConnectUs...</div>
 </div>
+
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+    // garante que a tela realmente apareceu
+    const loading = document.getElementById("loading-screen");
+
+    // espera 1 segundo para garantir visibilidade no mobile
     setTimeout(() => {
-        window.location.href = "cadastro.html";
-    }, 2000); // 2 segundos
+        loading.style.opacity = "0";
+
+        // remove da tela após fade
+        setTimeout(() => {
+            loading.style.display = "none";
+            window.location.href = "cadastro.html";
+        }, 500);
+
+    }, 1500); // tempo real de exibição
+});
 </script>
+
 </body>
 </html>
