@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ConnectUs — Configuração de Perfil</title>
+
+<style>
+/* ===========================================
+   VARIÁVEIS
+=========================================== */
+:root {
+  --bg:#000000;
+  --fg:#ffffff;
+  --card:#151515;
+  --muted:#c6c6c6;
+  --accent:#4aa3ff;
+  --btn:#1f1f1f;
+
+  --radius:12px;
+  --border-strong:#3d3d3d;
+  --input-bg:#0d0d0d;
+  --input-border:#575757;
+  --hover-bg:#1f1f1f;
+}
+
+/* ===========================================
+   BODY / GLOBAL
+=========================================== */
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  transition:background .25s, color .25s;
+}
+
+/* ===========================================
+   DROPDOWN DE ACESSIBILIDADE (ADIÇÃO)
+=========================================== */
+.top-acessibilidade select {
+  padding:10px;
+  border-radius:10px;
+  background:#2a2a2a;
+  color:#fff;
+  border:2px solid var(--border-strong);
+  cursor:pointer;
+  font-size:18px;
+  outline:none;
+  transition:.15s;
+  text-align: center;
+  width: 245px;          /* largura menor */
+  height: 38px;         /* altura menor */
+  font-size: 25px;      /* tamanho do ícone interno */
+  padding: 4px 8px;     /* reduzir espaçamento interno */
+  border-radius: 10px;  /* manter arredondado */
+  text-align: center;
+}
+
+.top-acessibilidade select:hover {
+  background:#3a3a3a;
+  border-color:var(--accent);
+}
+
+
+.top-acessibilidade {
+  position: fixed;
+  top:12px;
+  right:12px;
+  z-index:999; 
+}
+
+/* ===========================================
+   CABEÇALHO
+=========================================== */
+header {
+  background:#111;
+  padding:14px 18px;
+  text-align:center;
+  border-bottom:2px solid rgba(255,255,255,.05);
+  position:sticky;
+  top:0;
+  z-index:120;
+}
+header h1 {
+  margin:0;
+  font-size:20px;
+  color:#fff;
+}
+
+/* Wrapper */
+.wrap {
+  max-width:1000px;
+  margin:25px auto;
+  padding:18px;
+}
+
+/* Painel principal */
+.panel {
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:22px;
+  border:2px solid var(--border-strong);
+  box-shadow:0 0 16px rgba(0,0,0,.6);
+}
+
+/* ===========================================
+   GRID
+=========================================== */
+.row {
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.col {
+  flex:1;
+  min-width:260px;
+}
+
+/* ===========================================
+   LABELS
+=========================================== */
+label {
+  display:block;
+  font-weight:700;
+  margin-bottom:6px;
+  font-size:15px;
+  color:#ffffff;
+  letter-spacing:0.3px;
+}
+
+.small {
+  font-size:13px;
+  margin-top:6px;
+  color:var(--muted);
+}
+
+/* ===========================================
+   INPUTS / SELECTS / TEXTAREAS
+=========================================== */
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:2px solid var(--input-border);
+  background:var(--input-bg);
+  color:#ffffff;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:.15s;
+}
+
+textarea {
+  min-height:90px;
+  resize:vertical;
+}
+
+/* Foco */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color:var(--accent);
+  background:#000;
+  box-shadow:0 0 6px var(--accent);
+}
+
+/* Placeholder */
+::placeholder {
+  color:#b9b9b9;
+}
+
+/* ===========================================
+   FAVORITOS
+=========================================== */
+.fav-list {
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.fav-item {
+  background:#1f1f1f;
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid var(--border-strong);
+  color:#fff;
+  font-size:14px;
+}
+
+/* ===========================================
+   BOTÕES
+=========================================== */
+.actions {
+  display:flex;
+  gap:12px;
+  margin-top:20px;
+  flex-wrap:wrap;
+}
+
+.btn {
+  padding:10px 16px;
+  border-radius:10px;
+  border:2px solid var(--border-strong);
+  background:var(--btn);
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+  transition:.15s;
+}
+
+.btn:hover {
+  background:var(--hover-bg);
+}
+
+/* Botão principal */
+.btn.primary {
+  background:var(--accent);
+  border:none;
+  font-weight:700;
+}
+.btn.primary:hover {
+  background:#6bbaff;
+}
+
+/* Botão de perigo */
+.btn.danger {
+  background:#d9534f;
+  border:none;
+}
+.btn.danger:hover {
+  background:#e56762;
+}
+
+/* Botão Ghost */
+.btn.ghost {
+  background:transparent;
+  border:2px solid var(--border-strong);
+}
+.btn.ghost:hover {
+  background:#1f1f1f;
+}
+
+/* ===========================================
+   SENHA — ÍCONE
+=========================================== */
+.pwd-wrap {
+  position:relative;
+}
+
+.pwd-toggle--config {
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:20px;
+  color:#fff;
+  text-shadow:0 0 4px rgba(255,255,255,.4);
+}
+
+/* ===========================================
+   MODAL CONFIRMAÇÃO
+=========================================== */
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  padding:24px;
+  z-index:1500;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal .box {
+  max-width:700px;
+  background:#141414;
+  border-radius:12px;
+  border:2px solid var(--border-strong);
+  padding:20px;
+}
+
+.modal .box h3 {
+  margin-top:0;
+  color:#fff;
+}
+
+/* ===========================================
+   RESPONSIVO
+=========================================== */
+@media (max-width:720px){
+  .row { flex-direction:column; }
+  .btn { width:100%; }
+  .actions { justify-content:center; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- DROPDOWN DE ACESSIBILIDADE (ADIÇÃO) -->
+<div class="top-acessibilidade">
+  <select id="menuAcessibilidade" onchange="executarOpcao(this.value)" aria-label="Opções de acessibilidade">
+      <option value="" id="acessIcon" disabled selected hidden>⚙</option>
+      <option value="zoomIn">Aumentar Zoom</option>
+      <option value="zoomOut">Diminuir Zoom</option>
+      <option value="modoCalmo">Modo Calmo</option>
+      <option value="pauseAudio">Pausar Leitura</option>
+      <option value="resumeAudio">Retomar Leitura</option>
+      <option value="toggleTheme">Tema Claro/Escuro</option>
+      <option value="desativarVoz">Desativar Voz</option>
+  </select>
+</div>
+
+
+<header>
+  <h1 onmouseover="lerTexto('Configurações do perfil')">ConnectUs — Configurações</h1>
+</header>
+
+<main class="wrap">
+  <div class="panel">
+    <h2 style="margin-top:0">Editar Perfil</h2>
+    <p class="small">Altere seus dados abaixo. Todas as mudanças pedem confirmação antes de serem aplicadas.</p>
+
+    <div class="row" style="margin-top:12px;">
+      <div class="col">
+        <label for="cfg_nome">1. Nome</label>
+        <input id="cfg_nome" type="text" />
+
+        <label for="cfg_idade" style="margin-top:12px;">2. Idade</label>
+        <input id="cfg_idade" type="text" />
+
+        <label for="cfg_def" style="margin-top:12px;">3. Possui deficiência?</label>
+        <input id="cfg_def" type="text" placeholder="Ex: visual, auditiva, motora ou nenhuma" />
+      </div>
+
+      <div class="col">
+        <label for="cfg_nav">4. Preferência de navegação</label>
+        <select id="cfg_nav">
+          <option value="">(não definido)</option>
+          <option value="voz">Navegação por voz</option>
+          <option value="toque">Navegação por toque</option>
+          <option value="teclado">Teclado</option>
+        </select>
+
+        <label for="cfg_inter" style="margin-top:12px;">5. Interesses</label>
+        <input id="cfg_inter" type="text" placeholder="Ex: filmes, música, teatro..." />
+
+        <label style="margin-top:12px;">6. Coisas favoritas</label>
+        <div class="small">Adicione até 6 itens — ex: gênero, artista, série.</div>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <input id="favInput" type="text" placeholder="Adicionar favorito" style="flex:1" />
+          <button class="btn ghost" id="addFavBtn">Adicionar</button>
+        </div>
+        <div id="favList" class="fav-list" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <hr style="border:0; height:1px; background:rgba(255,255,255,.04); margin:16px 0;" />
+
+    <div class="row">
+      <div class="col">
+        <label for="cfg_senha">Senha (atualizar)</label>
+        <div class="pwd-wrap" style="width:100%;">
+          <input id="cfg_senha" type="password" placeholder="Deixe em branco para manter a senha atual" />
+          <button class="pwd-toggle--config" id="pwdToggle" aria-label="Mostrar/ocultar senha">👁️</button>
+        </div>
+        <div class="small" style="margin-top:8px;">Mantenha em branco se não quiser alterar a senha.</div>
+      </div>
+
+      <div class="col" style="display:flex; flex-direction:column; justify-content:flex-end;">
+        <div class="actions">
+          <button class="btn primary" id="saveBtn">Salvar alterações</button>
+          <button class="btn ghost" id="logoutBtn">Sair (Logout)</button>
+          <button class="btn danger" id="deleteBtn">Excluir minha conta</button>
+        </div>
+
+        <div class="small" style="margin-top:10px;color:var(--muted);">
+          As alterações serão salvas na sua conta atual e na lista geral de usuários.
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal de confirmação -->
+<div id="modalConfirm" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="box">
+    <h3 id="confirmTitle">Confirmar alteração</h3>
+    <div id="confirmBody" style="margin-top:8px;"></div>
+    <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+      <button class="btn ghost" id="confirmNo">Cancelar</button>
+      <button class="btn primary" id="confirmYes">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- VLibras -->
+<div vw class="enabled" style="z-index:1300">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script> try { new window.VLibras.Widget('https://vlibras.gov.br/app'); } catch(e){ console.warn('VLibras init failed', e); } </script>
+
+<script>
+/* ======================
+   UTILIDADES / VOZ
+   ====================== */
+let vozAtiva = true;
+function lerTexto(txt){
+  if (!vozAtiva || !txt) return;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = 'pt-BR';
+  try{ speechSynthesis.speak(u); }catch(e){}
+}
+
+/* alias usado em outras telas */
+function falar(t, onend){ if (!vozAtiva) { if (typeof onend === 'function') onend(); return;} try{ speechSynthesis.cancel(); }catch(e){} const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; if(onend) u.onend=onend; try{ speechSynthesis.speak(u);}catch(e){} }
+
+/* ======================
+   LEITURA DO USUÁRIO LOGADO
+   ====================== */
+/*
+  Mecanismo escolhido (OPÇÃO B):
+  - quando o usuário fez login, devemos ter salvo:
+      localStorage.setItem('usuarioLogado', nomeDoUsuario)
+  - lista de usuários: localStorage.getItem('usuariosConnectUs') -> array
+  - perfilConnectUs é mantido por compatibilidade, mas o "fonte da verdade" é usuariosConnectUs + usuarioLogado
+*/
+
+function getUsuariosList(){
+  try { return JSON.parse(localStorage.getItem('usuariosConnectUs')||'[]'); } catch(e){ return []; }
+}
+function saveUsuariosList(list){
+  try { localStorage.setItem('usuariosConnectUs', JSON.stringify(list)); } catch(e){ console.warn(e); }
+}
+function getUsuarioLogadoNome(){
+  return localStorage.getItem('usuarioLogado') || null;
+}
+function setUsuarioLogadoNome(nome){
+  if (nome) localStorage.setItem('usuarioLogado', nome);
+  else localStorage.removeItem('usuarioLogado');
+}
+
+/* pega o objeto do usuário atual (ou null) */
+function carregarUsuarioAtual(){
+  const nome = getUsuarioLogadoNome();
+  const lista = getUsuariosList();
+  if (nome) {
+    const u = lista.find(x => String(x.nome || '').toLowerCase() === String(nome).toLowerCase());
+    if (u) return u;
+  }
+  // fallback para compatibilidade com perfilConnectUs
+  try {
+    const fallback = JSON.parse(localStorage.getItem('perfilConnectUs')||'{}');
+    if (fallback && fallback.nome) return fallback;
+  } catch(e){}
+  return null;
+}
+
+/* popula inputs com dados do usuário */
+function popularForm(){
+  const u = carregarUsuarioAtual();
+  if (!u) {
+    // sem usuario: informar e redirecionar p/ login
+    lerTexto('Nenhum usuário logado. Você será redirecionado para a tela de cadastro.');
+    setTimeout(()=> window.location.href = 'index.html', 900);
+    return;
+  }
+  document.getElementById('cfg_nome').value = u.nome || '';
+  document.getElementById('cfg_idade').value = u.idade || '';
+  document.getElementById('cfg_def').value = u.deficiencia || '';
+  document.getElementById('cfg_nav').value = u.navegacao || '';
+  document.getElementById('cfg_inter').value = u.interesse || '';
+  // favoritos
+  const favs = Array.isArray(u.favoritos) ? u.favoritos.slice(0,6) : (u.favoritos ? (String(u.favoritos).split('|').slice(0,6)) : []);
+  renderFavs(favs);
+}
+
+/* ======================
+   FAVORITOS (simples)
+   ====================== */
+function renderFavs(list){
+  const box = document.getElementById('favList');
+  box.innerHTML = '';
+  list = list || [];
+  list.forEach((f, idx) => {
+    const el = document.createElement('div');
+    el.className = 'fav-item';
+    el.textContent = f;
+    el.setAttribute('data-idx', idx);
+    el.tabIndex = 0;
+    // remover ao clicar
+    el.addEventListener('click', ()=> {
+      confirmAction(`Remover favorito "${f}"?`, ()=>{
+        // remove
+        const usuario = carregarUsuarioAtual();
+        if (!usuario) return;
+        let favs = Array.isArray(usuario.favoritos) ? usuario.favoritos.slice() : (usuario.favoritos ? String(usuario.favoritos).split('|') : []);
+        favs.splice(idx,1);
+        usuario.favoritos = favs;
+        updateUsuario(usuario);
+        renderFavs(favs);
+      });
+    });
+    box.appendChild(el);
+  });
+}
+
+/* adicionar favorito */
+document.getElementById('addFavBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  const v = document.getElementById('favInput').value.trim();
+  if (!v) { lerTexto('Digite o favorito antes de adicionar.'); return; }
+  const usuario = carregarUsuarioAtual();
+  if (!usuario) return;
+  let favs = Array.isArray(usuario.favoritos) ? usuario.favoritos.slice() : (usuario.favoritos ? String(usuario.favoritos).split('|') : []);
+  if (favs.length >= 6) { lerTexto('Máximo de 6 favoritos permitido.'); return; }
+  favs.push(v);
+  usuario.favoritos = favs;
+  // confirmação antes de efetivar
+  confirmAction(`Adicionar favorito "${v}" ao seu perfil?`, ()=>{
+    updateUsuario(usuario);
+    renderFavs(favs);
+    document.getElementById('favInput').value = '';
+    lerTexto('Favorito adicionado.');
+  });
+});
+
+/* ======================
+   ATUALIZAÇÃO DO USUÁRIO
+   ====================== */
+function gatherFormChanges(){
+  const usuario = carregarUsuarioAtual();
+  if (!usuario) return null;
+  const novo = {
+    nome: (document.getElementById('cfg_nome').value || '').trim(),
+    idade: (document.getElementById('cfg_idade').value || '').trim(),
+    deficiencia: (document.getElementById('cfg_def').value || '').trim(),
+    navegacao: (document.getElementById('cfg_nav').value || '').trim(),
+    interesse: (document.getElementById('cfg_inter').value || '').trim(),
+    senha: (document.getElementById('cfg_senha').value || '').trim(),
+    favoritos: Array.isArray(usuario.favoritos) ? usuario.favoritos.slice() : (usuario.favoritos ? String(usuario.favoritos).split('|') : [])
+  };
+  // if senha blank => keep existing
+  if (!novo.senha) novo.senha = usuario.senha || '';
+  return { before: usuario, after: novo };
+}
+
+function diffSummary(before, after){
+  const diffs = [];
+  if ((before.nome||'') !== (after.nome||'')) diffs.push(`Nome: "${before.nome||'(vazio)'}" → "${after.nome||'(vazio)'}"`);
+  if ((before.idade||'') !== (after.idade||'')) diffs.push(`Idade: "${before.idade||'(vazio)'}" → "${after.idade||'(vazio)'}"`);
+  if ((before.deficiencia||'') !== (after.deficiencia||'')) diffs.push(`Deficiência: "${before.deficiencia||'(vazio)'}" → "${after.deficiencia||'(vazio)'}"`);
+  if ((before.navegacao||'') !== (after.navegacao||'')) diffs.push(`Navegação: "${before.navegacao||'(vazio)'}" → "${after.navegacao||'(vazio)'}"`);
+  if ((before.interesse||'') !== (after.interesse||'')) diffs.push(`Interesses: "${before.interesse||'(vazio)'}" → "${after.interesse||'(vazio)'}"`);
+  // senha: we don't print actual value
+  if ((before.senha||'') !== (after.senha||'')) diffs.push(`Senha: será atualizada`);
+  // favoritos: shallow compare
+  const A = (Array.isArray(before.favoritos) ? before.favoritos.join('|') : (before.favoritos||''));
+  const B = (Array.isArray(after.favoritos) ? after.favoritos.join('|') : (after.favoritos||''));
+  if (A !== B) diffs.push('Favoritos: alteração');
+  return diffs;
+}
+
+/* apply update to usuariosConnectUs list and perfilConnectUs + usuarioLogado */
+function updateUsuario(novoUsuarioObj){
+  const nomeAtual = getUsuarioLogadoNome() || ( (JSON.parse(localStorage.getItem('perfilConnectUs')||'{}')).nome );
+  let lista = getUsuariosList();
+  // find index by original name (case-insensitive)
+  let idx = lista.findIndex(u => String(u.nome||'').toLowerCase() === String(nomeAtual||'').toLowerCase());
+  if (idx === -1) {
+    // se não existe, adiciona
+    lista.push(novoUsuarioObj);
+  } else {
+    lista[idx] = novoUsuarioObj;
+  }
+  saveUsuariosList(lista);
+  // manter compat com perfilConnectUs e usuarioLogado
+  localStorage.setItem('perfilConnectUs', JSON.stringify(novoUsuarioObj));
+  setUsuarioLogadoNome(novoUsuarioObj.nome);
+}
+
+/* handler salvar alterações (com confirmação) */
+document.getElementById('saveBtn').addEventListener('click', function(){
+  const parts = gatherFormChanges();
+  if (!parts) return;
+  const diffs = diffSummary(parts.before, parts.after);
+  if (!diffs.length) {
+    lerTexto('Nenhuma alteração detectada.');
+    return;
+  }
+  // mostrar confirmação com resumo
+  const body = diffs.map(d=>'• '+d).join('<br>');
+  confirmAction(`<div>Deseja aplicar as seguintes alterações?</div><div style="margin-top:10px;">${body}</div>`, ()=>{
+    // aplicar: se o nome foi alterado, precisamos atualizar index (renomear)
+    const beforeName = parts.before.nome || '';
+    const after = parts.after;
+    // atualizar lista: remover antigo se renomeado
+    let lista = getUsuariosList();
+    // remove entry with beforeName (case-insensitive)
+    lista = lista.filter(u => String(u.nome||'').toLowerCase() !== String(beforeName).toLowerCase());
+    // push updated
+    lista.push(after);
+    saveUsuariosList(lista);
+    localStorage.setItem('perfilConnectUs', JSON.stringify(after));
+    setUsuarioLogadoNome(after.nome);
+    // limpar campo senha para segurança
+    document.getElementById('cfg_senha').value = '';
+    lerTexto('Alterações salvas com sucesso.');
+  });
+});
+
+/* ======================
+   EXCLUIR CONTA
+   - apaga apenas o usuário logado da lista
+   - remove perfilConnectUs e usuarioLogado
+   ====================== */
+document.getElementById('deleteBtn').addEventListener('click', function(){
+  const u = carregarUsuarioAtual();
+  if (!u) return;
+  confirmAction(`Tem certeza que deseja <strong>excluir permanentemente</strong> a conta "${u.nome}"? Essa ação não pode ser desfeita.`, ()=>{
+    // remove da lista
+    let lista = getUsuariosList();
+    lista = lista.filter(x => String(x.nome||'').toLowerCase() !== String(u.nome||'').toLowerCase());
+    saveUsuariosList(lista);
+    // limpar perfilConnectUs e usuarioLogado
+    localStorage.removeItem('perfilConnectUs');
+    setUsuarioLogadoNome(null);
+    lerTexto('Conta excluída. Você será redirecionado para a tela inicial.');
+    setTimeout(()=> window.location.href = 'index.html', 900);
+  });
+});
+
+/* ======================
+   LOGOUT
+   ====================== */
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  confirmAction('Deseja sair da sua conta agora?', ()=>{
+    setUsuarioLogadoNome(null);
+    lerTexto('Logout realizado. Redirecionando para a tela inicial.');
+    setTimeout(()=> window.location.href = 'index.html', 700);
+  });
+});
+
+/* ======================
+   PWD TOGGLE (botão com classe específica)
+   ====================== */
+document.getElementById('pwdToggle').addEventListener('click', function(){
+  const campo = document.getElementById('cfg_senha');
+  const btn = document.getElementById('pwdToggle');
+  if (campo.type === 'password') { campo.type='text'; btn.textContent='🙈'; lerTexto('Senha visível'); }
+  else { campo.type='password'; btn.textContent='👁️'; lerTexto('Senha oculta'); }
+});
+
+/* ======================
+   Helper: janela de confirmação custom (reutilizável)
+   - mostra modalConfirm com conteúdo HTML; retorna via callbacks
+   ====================== */
+function confirmAction(htmlContent, onYes){
+  const modal = document.getElementById('modalConfirm');
+  const titleEl = document.getElementById('confirmTitle');
+  const bodyEl = document.getElementById('confirmBody');
+  const yes = document.getElementById('confirmYes');
+  const no  = document.getElementById('confirmNo');
+
+  titleEl.innerText = 'Confirmação';
+  bodyEl.innerHTML = htmlContent;
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden','false');
+
+  // handlers (removemos handlers antigos antes)
+  function cleanup(){
+    yes.removeEventListener('click', yesHandler);
+    no.removeEventListener('click', noHandler);
+    document.removeEventListener('keydown', escHandler);
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
+  function yesHandler(){
+    cleanup();
+    if (typeof onYes === 'function') onYes();
+  }
+  function noHandler(){ cleanup(); lerTexto('Operação cancelada.'); }
+  function escHandler(e){ if (e.key === 'Escape') noHandler(); }
+
+  yes.addEventListener('click', yesHandler);
+  no.addEventListener('click', noHandler);
+  document.addEventListener('keydown', escHandler);
+
+  // foco no botão confirmar
+  setTimeout(()=> yes.focus(), 100);
+}
+
+/* ======================
+   INICIALIZAÇÃO
+   ====================== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // popular formulário
+  popularForm();
+  // garantir que modalConfirm comece oculto
+  document.getElementById('modalConfirm').style.display = 'none';
+});
+
+/* small helper to read fields labels on hover for accessibility */
+const inputs = document.querySelectorAll('#cfg_nome,#cfg_idade,#cfg_def,#cfg_nav,#cfg_inter,#cfg_senha');
+inputs.forEach(i=>{
+  i.addEventListener('mouseover', ()=> { if (i.placeholder) lerTexto(i.placeholder); else lerTexto(i.previousElementSibling ? i.previousElementSibling.innerText : 'Campo'); });
+});
+</script>
+
+</body>
+</html>
